@@ -35,7 +35,7 @@ gg_map <- ggplot(data = africa) +
   scale_size(range=c(.2,2.6),name="Incidents")+
   coord_sf(xlim=c(-16,51),ylim=c(-34,36))+
   theme_void()+
-  theme(axis.line=element_blank(),axis.title=element_blank(),axis.text=element_blank(),legend.position=c(.88,.92),legend.text=element_text(hjust=0,size=8),legend.title = element_blank())
+  theme(axis.line=element_blank(),axis.title=element_blank(),axis.text=element_blank(),legend.position=c(.88,.92),legend.text=element_text(hjust=0,size=8),legend.title = element_blank(),panel.background=element_rect(fill="white",color=NA),plot.background=element_rect(fill="white",color=NA),legend.background=element_rect(fill="transparent",color=NA))
 
 ggsave("figures/conflict_africa.png",gg_map,width=6.5,height=6.5,dpi="retina",device="png")
 ggsave("figures/conflict_africa.eps",gg_map,width=6.5,height=6.5,dpi="retina",device="eps")
