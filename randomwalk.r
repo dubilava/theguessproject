@@ -1,39 +1,44 @@
 # load the libraries (install them if needed)
 library(data.table)
 library(ggplot2)
-library(crypto2)
 
-# load all active coins
-coins <- crypto_list()
+# generate sample time series
+n <- 200
+set.seed(1)
+y <- rnorm(n)
+for(i in 2:n){
+  y[i] <- .8*y[i-1]+y[i]
+}
 
-# store as the data.table object
-coins_dt <- data.table(coins)
-
-# select the coin of interest -- Bitcoin
-coins_sub_dt <- coins_dt[symbol=="BTC"]
-
-# fetch the historical data beginning from 1 Jan 2020
-btc_tb <- crypto_history(coin_list = coins_sub_dt,start_date="20200101")
-
-# reformat the dates
-btc_tb$timestamp <- as.POSIXct(btc_tb$timestamp,format="%Y-%m-%d")
-btc_tb$time_open <- as.POSIXct(btc_tb$time_open,format="%Y-%m-%d")
-btc_tb$time_close <- as.POSIXct(btc_tb$time_close,format="%Y-%m-%d")
-btc_tb$time_high <- as.POSIXct(btc_tb$time_high,format="%Y-%m-%d")
-btc_tb$time_low <- as.POSIXct(btc_tb$time_low,format="%Y-%m-%d")
-
-# store the dataset as the data.table object
-btc_dt <- data.table(btc_tb)
-
-# keep only date and closing price (expressed in thousand dollars)
-btc_dt <- btc_dt[,.(date=as.Date(substr(timestamp,1,10)),BTC=close/1000)]
+# store in a data.table
+dt <- data.table(date=1:n,y=y)
 
 # plot the time series
-gg_ts <- ggplot(btc_dt,aes(x=date,y=BTC))+
-  geom_line(size=0.8,color="coral")+
-  labs(x="Year",y="BTC ('000 US Dollars)")+
+gg_ts <- ggplot(dt,aes(x=date,y=y))+
+  geom_line(linewidth=0.8,color="coral")+
+  labs(x="t",y=expression(y[t]))+
   theme_classic()+
   theme(axis.title = element_text(size=12),axis.text = element_text(size=10))
+
+# less information
+dt[,`:=`(y1=shift(y,1),less=ifelse(date>100 & date<=150,y,NA),more=ifelse(date<=150,y,NA))]
+
+reg_less <- lm(less~y1,data=dt)
+reg_more <- lm(more~y1,data=dt)
+
+sig_less <- summary(reg_less)$sigma
+
+
+pow <- function(x,i){
+  x <- x^i
+  return(x)
+}
+
+multi_less <- pow(reg_less$coefficients["y1"],0:49)
+
+var_less <- sig_less*cumsum(multiplier)
+
+
 
 ggsave("figures/bitcoin.png",gg_ts,width=6.5,height=4.5,dpi="retina",device="png")
 ggsave("figures/bitcoin.eps",gg_ts,width=6.5,height=4.5,dpi="retina",device="eps")
