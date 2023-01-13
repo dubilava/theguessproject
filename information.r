@@ -66,9 +66,9 @@ rmsfe2_dt[,`:=`(dif=log(exp/rol))]
 # a 'density' plot of relative RMSFE (no structural change)
 gg_nc <- ggplot(rmsfe1_dt,aes(x=dif))+
   geom_dotplot(binwidth=.00055,dotsize=.6,color="coral",fill="coral",method="histodot")+
-  labs(x="Relative RMSFE of Expanding vs Rolling Windows",y="",title="Constant Data-Generating Process")+
+  labs(x="Relative Difference in RMSFE of Expanding vs Rolling Windows",y="",title="Constant Data-Generating Process",caption="Created by @DavidUbilava using simulated data")+
   theme_classic()+
-  theme(axis.line.y=element_blank(),axis.ticks.y=element_blank(),axis.text.y=element_blank())
+  theme(axis.title = element_text(size=12,colour="dimgray"),axis.text = element_text(size=10,colour="dimgray"),panel.background=element_rect(fill=NA,color=NA),plot.background=element_rect(fill=NA,color=NA),legend.background=element_rect(fill="transparent",color=NA),axis.line=element_line(colour="darkgray"),axis.ticks=element_line(colour="darkgray"),axis.line.y=element_blank(),axis.ticks.y=element_blank(),axis.text.y=element_blank(),plot.caption = element_text(colour="slategray"))
 
 ggsave("figures/nochange.png",gg_nc,width=6.5,height=4.5,dpi="retina",device="png")
 ggsave("figures/nochange.eps",gg_nc,width=6.5,height=4.5,dpi="retina",device="eps")
@@ -76,9 +76,9 @@ ggsave("figures/nochange.eps",gg_nc,width=6.5,height=4.5,dpi="retina",device="ep
 # a 'density' plot of relative RMSFE (structural change)
 gg_sc <- ggplot(rmsfe2_dt,aes(x=dif))+
   geom_dotplot(binwidth=.00145,dotsize=.55,color="coral",fill="coral",method="histodot")+
-  labs(x="Relative RMSFE of Expanding vs Rolling Windows",y="",title="Changing Data-Generating Process")+
+  labs(x="Relative Difference in RMSFE of Expanding vs Rolling Windows",y="",title="Changing Data-Generating Process",caption="Created by @DavidUbilava using simulated data")+
   theme_classic()+
-  theme(axis.line.y=element_blank(),axis.ticks.y=element_blank(),axis.text.y=element_blank())
+  theme(axis.title = element_text(size=12,colour="dimgray"),axis.text = element_text(size=10,colour="dimgray"),panel.background=element_rect(fill=NA,color=NA),plot.background=element_rect(fill=NA,color=NA),legend.background=element_rect(fill="transparent",color=NA),axis.line=element_line(colour="darkgray"),axis.ticks=element_line(colour="darkgray"),axis.line.y=element_blank(),axis.ticks.y=element_blank(),axis.text.y=element_blank(),plot.caption = element_text(colour="slategray"))
 
 ggsave("figures/change.png",gg_sc,width=6.5,height=4.5,dpi="retina",device="png")
 ggsave("figures/change.eps",gg_sc,width=6.5,height=4.5,dpi="retina",device="eps")
