@@ -29,13 +29,15 @@ colnames(datasum_dt)[3:6] <- c("Rebel groups","State forces","Identity militias"
 
 # generate the map
 gg_map <- ggplot(data = africa) +
-  geom_sf(color="gray",fill=NA,size=.25)+
+  geom_sf(color="darkgray",fill=NA,size=.25)+
   geom_scatterpie(data=datasum_dt,aes(x=longitude,y=latitude,r=conflict_radius),cols=c("Rebel groups","State forces","Identity militias","Political militias"),color=NA)+
   scale_fill_manual(values=c("indianred","goldenrod","forestgreen","steelblue"))+
   scale_size(range=c(.2,2.6),name="Incidents")+
   coord_sf(xlim=c(-16,51),ylim=c(-34,36))+
+  labs(caption="Created by @DavidUbilava using ACLED data")+
   theme_void()+
-  theme(axis.line=element_blank(),axis.title=element_blank(),axis.text=element_blank(),legend.position=c(.88,.92),legend.text=element_text(hjust=0,size=8),legend.title = element_blank(),panel.background=element_rect(fill="white",color=NA),plot.background=element_rect(fill="white",color=NA),legend.background=element_rect(fill="transparent",color=NA))
+  theme(axis.line=element_blank(),axis.title=element_blank(),axis.text=element_blank(),legend.position=c(.88,.92),legend.text=element_text(hjust=0,size=8,colour="darkgray"),legend.title = element_blank(),panel.background=element_rect(fill=NA,color=NA),plot.background=element_rect(fill=NA,color=NA),legend.background=element_rect(fill="transparent",color=NA),plot.caption = element_text(colour="slategray"))
+
 
 ggsave("figures/conflict_africa.png",gg_map,width=6.5,height=6.5,dpi="retina",device="png")
 ggsave("figures/conflict_africa.eps",gg_map,width=6.5,height=6.5,dpi="retina",device="eps")
