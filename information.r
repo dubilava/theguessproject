@@ -2,6 +2,27 @@
 library(data.table)
 library(ggplot2)
 
+# plot aesthetics
+theme_guess <- function(){
+  theme(
+    panel.background=element_rect(fill="transparent",color=NA),
+    plot.background=element_rect(fill="transparent",color=NA),
+    legend.background=element_rect(fill="transparent",color=NA),
+    plot.title=element_text(size=12,colour="dimgray"),
+    axis.title=element_text(size=12,colour="dimgray"),
+    axis.text=element_text(size=10,colour="dimgray",margin=margin(t=1,r=1,b=1,l=1)),
+    axis.line=element_line(colour="darkgray"),
+    axis.ticks=element_line(colour="darkgray"),
+    legend.position="none",
+    legend.title=element_blank(),
+    legend.text=element_text(size=10,colour="dimgray"),
+    legend.key.size=unit(.75,'lines'),
+    plot.caption = element_text(colour="slategray"),
+    strip.background=element_blank(),
+    strip.text=element_text(size=10,colour="dimgray",face="bold",margin=margin(.1,0,.1,0,"cm"))
+  )
+}
+
 # a function that simulates a time series with no structural change
 sim <- function(m,n,sc=FALSE){
   
@@ -68,7 +89,8 @@ gg_nc <- ggplot(rmsfe1_dt,aes(x=dif))+
   geom_dotplot(binwidth=.00055,dotsize=.6,color="coral",fill="coral",method="histodot")+
   labs(x="Relative Difference in RMSFE of Expanding vs Rolling Windows",y="",title="Constant Data-Generating Process",caption="Created by @DavidUbilava using simulated data")+
   theme_classic()+
-  theme(axis.title = element_text(size=12,colour="dimgray"),axis.text = element_text(size=10,colour="dimgray"),panel.background=element_rect(fill=NA,color=NA),plot.background=element_rect(fill=NA,color=NA),legend.background=element_rect(fill="transparent",color=NA),axis.line=element_line(colour="darkgray"),axis.ticks=element_line(colour="darkgray"),axis.line.y=element_blank(),axis.ticks.y=element_blank(),axis.text.y=element_blank(),plot.caption = element_text(colour="slategray"))
+  theme_guess()+
+  theme(axis.title.y=element_blank(),axis.text.y = element_blank(),axis.line.y = element_blank())
 
 ggsave("figures/nochange.png",gg_nc,width=6.5,height=4.5,dpi="retina",device="png")
 ggsave("figures/nochange.eps",gg_nc,width=6.5,height=4.5,dpi="retina",device="eps")
@@ -78,7 +100,8 @@ gg_sc <- ggplot(rmsfe2_dt,aes(x=dif))+
   geom_dotplot(binwidth=.00145,dotsize=.55,color="coral",fill="coral",method="histodot")+
   labs(x="Relative Difference in RMSFE of Expanding vs Rolling Windows",y="",title="Changing Data-Generating Process",caption="Created by @DavidUbilava using simulated data")+
   theme_classic()+
-  theme(axis.title = element_text(size=12,colour="dimgray"),axis.text = element_text(size=10,colour="dimgray"),panel.background=element_rect(fill=NA,color=NA),plot.background=element_rect(fill=NA,color=NA),legend.background=element_rect(fill="transparent",color=NA),axis.line=element_line(colour="darkgray"),axis.ticks=element_line(colour="darkgray"),axis.line.y=element_blank(),axis.ticks.y=element_blank(),axis.text.y=element_blank(),plot.caption = element_text(colour="slategray"))
+  theme_guess()+
+  theme(axis.title.y=element_blank(),axis.text.y = element_blank(),axis.line.y = element_blank())
 
 ggsave("figures/change.png",gg_sc,width=6.5,height=4.5,dpi="retina",device="png")
 ggsave("figures/change.eps",gg_sc,width=6.5,height=4.5,dpi="retina",device="eps")

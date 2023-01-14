@@ -2,6 +2,28 @@
 library(data.table)
 library(ggplot2)
 library(crypto2)
+library(Cairo)
+
+# plot aesthetics
+theme_guess <- function(){
+  theme(
+    panel.background=element_rect(fill="transparent",color=NA),
+    plot.background=element_rect(fill="transparent",color=NA),
+    legend.background=element_rect(fill="transparent",color=NA),
+    plot.title=element_text(size=12,colour="dimgray"),
+    axis.title=element_text(size=12,colour="dimgray"),
+    axis.text=element_text(size=10,colour="dimgray",margin=margin(t=1,r=1,b=1,l=1)),
+    axis.line=element_line(colour="darkgray"),
+    axis.ticks=element_line(colour="darkgray"),
+    legend.position="none",
+    legend.title=element_blank(),
+    legend.text=element_text(size=10,colour="dimgray"),
+    legend.key.size=unit(.75,'lines'),
+    plot.caption = element_text(colour="slategray"),
+    strip.background=element_blank(),
+    strip.text=element_text(size=10,colour="dimgray",face="bold",margin=margin(.1,0,.1,0,"cm"))
+  )
+}
 
 # load all active coins
 coins <- crypto_list()
@@ -34,7 +56,7 @@ gg_ts <- ggplot(btc_dt,aes(x=date,y=BTC))+
   labs(x="Year",y="BTC ('000 US Dollars)")+
   labs(caption="Created by @DavidUbilava using CoinMarketCap data via crypto2 package")+
   theme_classic()+
-  theme(axis.title = element_text(size=12,colour="dimgray"),axis.text = element_text(size=10,colour="dimgray"),panel.background=element_rect(fill=NA,color=NA),plot.background=element_rect(fill=NA,color=NA),legend.background=element_rect(fill="transparent",color=NA),axis.line=element_line(colour="darkgray"),axis.ticks=element_line(colour="darkgray"),plot.caption = element_text(colour="slategray"))
+  theme_guess()
 
 ggsave("figures/bitcoin.png",gg_ts,width=6.5,height=4.5,dpi="retina",device="png")
 ggsave("figures/bitcoin.eps",gg_ts,width=6.5,height=4.5,dpi="retina",device="eps")
@@ -54,7 +76,7 @@ gg_acf <- ggplot(acf_dt,aes(x=k,y=rho))+
   coord_cartesian(ylim=c(0,1),xlim=c(4,maxlag-3))+
   labs(caption="Created by @DavidUbilava using CoinMarketCap data via crypto2 package")+
   theme_classic()+
-  theme(axis.title = element_text(size=12,colour="dimgray"),axis.text = element_text(size=10,colour="dimgray"),panel.background=element_rect(fill=NA,color=NA),plot.background=element_rect(fill=NA,color=NA),legend.background=element_rect(fill="transparent",color=NA),axis.line=element_line(colour="darkgray"),axis.ticks=element_line(colour="darkgray"),plot.caption = element_text(colour="slategray"))
+  theme_guess()
 
 ggsave("figures/autocorrelogram.png",gg_acf,width=6.5,height=4.5,dpi="retina",device="png")
 ggsave("figures/autocorrelogram.eps",gg_acf,width=6.5,height=4.5,dpi="retina",device="eps")
@@ -87,7 +109,8 @@ gg_den <- ggplot(e_lg,aes(x=value,color=variable,fill=variable))+
   labs(x="Absolute forecast error ('000 US Dollars)",y="Density",caption="Created by @DavidUbilava using CoinMarketCap data via crypto2 package")+
   xlim(c(0,5))+
   theme_classic()+
-  theme(axis.title = element_text(size=12,colour="dimgray"),axis.text = element_text(size=10,colour="dimgray"),panel.background=element_rect(fill=NA,color=NA),plot.background=element_rect(fill=NA,color=NA),legend.background=element_rect(fill="transparent",color=NA),legend.position = "top",legend.title = element_blank(),axis.line=element_line(colour="darkgray"),axis.ticks=element_line(colour="darkgray"),plot.caption = element_text(colour="slategray"))
+  theme_guess()+
+  theme(legend.position="top")
 
 ggsave("figures/absolute_densities.png",gg_den,width=6.5,height=4.5,dpi="retina",device="png")
-ggsave("figures/absolute_densities.eps",gg_den,width=6.5,height=4.5,dpi="retina",device="eps")
+ggsave("figures/absolute_densities.eps",gg_den,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
