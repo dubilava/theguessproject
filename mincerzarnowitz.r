@@ -1,3 +1,4 @@
+# load the libraries (install them if needed)
 library(data.table)
 library(ggplot2)
 library(Cairo)
@@ -23,7 +24,7 @@ theme_guess <- function(){
   )
 }
 
-# generate simulated data
+# generate simulated data: AR(1) with b=0.5
 n <- 240
 set.seed(3)
 y <- rnorm(n)
@@ -38,6 +39,7 @@ dt <- data.table(t=1:n,y)
 
 dt[,`:=`(y1=shift(y,1))]
 
+# plot realizations against forecasts with 'mincer-zarnowitz lines'
 gg_mz <- ggplot(dt,aes(x=y1,y=y))+
   geom_hline(yintercept = mean(dt$y,na.rm=T),linewidth=.5,linetype=5,color="dimgray")+
   geom_vline(xintercept = mean(dt$y1,na.rm=T),linewidth=.5,linetype=5,color="dimgray")+
@@ -48,7 +50,6 @@ gg_mz <- ggplot(dt,aes(x=y1,y=y))+
   coord_cartesian(xlim=c(-3,3),ylim=c(-3,3))+
   theme_classic()+
   theme_guess()
-  qwW
 
 ggsave("figures/mz.png",gg_mz,width=6.5,height=6.5,dpi="retina",device="png")
 ggsave("figures/mz.eps",gg_mz,width=6.5,height=6.5,dpi="retina",device=cairo_ps)

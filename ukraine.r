@@ -28,7 +28,9 @@ theme_guess <- function(){
   )
 }
 
+# load data
 load("data/ukraine.RData")
+
 # wheat futures ----
 
 gg_wheat <- ggplot(wheat_sub,aes(x=Date,y=Close))+
@@ -87,8 +89,7 @@ ggsave("figures/exports.eps",gg_expr,width=6.5,height=4.5,dpi="retina",device="e
 
 # Conflict ----
 
-## organize the conflict data
-
+# organize the conflict data
 aggregate_sub <- conflict_sub[,.(events=sum(events)),by=.(country,year)]
 
 pre_dt <- aggregate_sub[year%in%c(2017:2019),.(events=mean(events)),by=.(country)]
@@ -123,6 +124,7 @@ combined_dt <- rbind(combined_dt,ws)
 
 combined_dt[,`:=`(war_ch=(war-pan))]
 
+# incorporate conflict stats into the africa sf object
 africaplus <- merge(africa,combined_dt,by="name_long",all.x=T)
 
 # organize events by lon-lat
