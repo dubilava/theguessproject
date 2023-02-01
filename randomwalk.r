@@ -1,8 +1,9 @@
 # load the libraries (install them if needed)
 library(data.table)
 library(ggplot2)
-library(crypto2)
 library(Cairo)
+library(crypto2)
+library(fredr)
 
 # plot aesthetics
 theme_guess <- function(){
