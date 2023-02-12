@@ -55,8 +55,11 @@ gg1 <- ggplot(dt,aes(x=x,y=y))+
   annotate("rect",xmin=c(20,55),xmax=c(40,85),ymin=-Inf,ymax=Inf,fill="lightgray",alpha=.5)+
   geom_segment(data=segment_dt,aes(x=x,y=y,xend=xend,yend=yend),linetype=5,linewidth=.6,color="dimgray")+
   geom_line(linewidth=.8)+
+  annotate("text",x=c(30,70),y=c(3.5,3.5),label="conflict",hjust=.5,vjust=.5)+
   labs(x="t",y=expression(p["i,t"]-p["j,t"]))+
   theme_classic()
+
+gg1
 
 ggsave("spatial.png",gg1,width=6.5,height=3.0,dpi="retina",device="png")
 
@@ -80,6 +83,7 @@ for(i in 2:n){
 dt <- data.table(x=factor(1:n),y1=y1*30,y2=y2*30)
 
 dl <- melt(dt,id.vars="x")
+dl$variable <- factor(dl$variable,levels=c("y1","y2"),labels=c("with storage","without storage"))
 
 # segment_dt = data.table(
 #   x = c(0,20,40,55,85,0,20,40,55,85),
@@ -92,11 +96,12 @@ gg2 <- ggplot(dl,aes(x=x,y=value,linetype=variable,group=variable))+
   annotate("rect",xmin=8,xmax=12,ymin=-Inf,ymax=Inf,fill="lightgray",alpha=.5)+
   # geom_segment(data=segment_dt,aes(x=x,y=y,xend=xend,yend=yend),linetype=5,linewidth=.6,color="dimgray")+
   geom_line(linewidth=.8)+
+  annotate("text",x=c(1.5,5.0,10),y=c(15,15,-5),label=c("harvest","postharvest season","lean season"),hjust=.5,vjust=.5)+
   scale_x_discrete(labels=c(0:11))+
   # coord_cartesian(ylim=c(0,3))+
-  labs(x="m",y=expression(paste(100,"%",(p[m]-p[0])/p[0])))+
+  labs(x="m",y=expression(paste(100,"%\u00D7",(p[m]-p[0])/p[0])))+
   theme_classic()+
-  theme(legend.position = "none")
+  theme(legend.position=c(.15,.85),legend.title=element_blank(),legend.text = element_text(size=10))
 
 gg2
 
