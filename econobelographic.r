@@ -30,32 +30,50 @@ dt <- fread("data/nobel_economics.csv")
 
 dt[,`:=`(Age=Year-Born)]
 
-dt[, id := seq_len(.N), by = Year]
-dt[, id := rowid(Year)]
+dt[,id := seq_len(.N),by=Year]
 
-# plot realizations against forecasts with 'mincer-zarnowitz lines'
-gg1 <- ggplot(dt,aes(x=Year,y=Age,fill=factor(id)))+
+# plot ages and children of nobel prize laureates in economics
+gg_age <- ggplot(dt,aes(x=Year,y=Age,fill=factor(id)))+
   geom_bar(stat="identity",width=.8,position=position_dodge(width=.9))+
   scale_fill_manual(values=c("coral","goldenrod1","indianred"))+
-  labs(title="Nobel Prize Laureates in Economics")+
+  coord_cartesian(ylim=c(0,90))+
+  labs(title="Age of the laureate at the time of award of the Nobel Prize in Economics")+
   theme_classic()+
   theme_guess()+
-  theme(axis.line.x = element_blank(),axis.ticks.x=element_blank(),plot.margin=margin(.5,0,0,0,"cm"))
+  theme(axis.line = element_blank(),axis.ticks=element_blank(),axis.text.y=element_blank(),axis.title.y = element_blank(),plot.margin=margin(0,0,0,0,"cm"))
 
-gg2 <- ggplot(dt,aes(x=Year,y=Children,group=factor(id)))+
+gg_agedots <- ggplot(dt,aes(x=Age))+
+  geom_dotplot(fill="coral",color="lightgray",binwidth=3,method="histodot")+
+  coord_flip(xlim=c(0,90))+
+  theme_classic()+
+  theme_guess()+
+  theme(axis.line = element_blank(),axis.ticks=element_blank(),axis.text.x=element_blank(),axis.title = element_blank(),plot.margin=margin(0,0,0,0,"cm"))
+
+
+gg_children <- ggplot(dt,aes(x=Year,y=Children,group=factor(id)))+
   geom_bar(stat="identity",width=.8,position=position_dodge(width=.9),fill="darkgray")+
   scale_y_reverse()+
   theme_classic()+
   theme_guess()+
-  labs(caption = "Created by @DavidUbilava using data from Wikipedia and other online sources")+
-  theme(axis.line.x = element_blank(),axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x=element_blank(),plot.margin=margin(0,0,0,0,"cm"))
+  labs(title="Number of children of the laureate",caption = "Created by @DavidUbilava\nBased on data from Wikipedia and other online sources")+
+  theme(axis.line = element_blank(),axis.ticks=element_blank(),axis.text=element_blank(),axis.title = element_blank(),plot.margin=margin(0,0,0,0,"cm"))
 
-gg_combined <- plot_grid(gg1,gg2,nrow=2,align="v",rel_heights = c(3,2))
+gg_childrendots <- ggplot(dt,aes(x=Children))+
+  geom_dotplot(fill="lightgray",color="darkgray",binwidth=.4)+
+  scale_x_reverse()+
+  coord_flip()+
+  theme_classic()+
+  theme_guess()+
+  theme(axis.line = element_blank(),axis.text.x = element_blank(),axis.title = element_blank(),axis.ticks=element_blank(),plot.margin=margin(0,0,0,0,"cm"))
 
-ggsave("figures/nobels.png",gg_combined,width=6.5,height=4.5,dpi="retina",device="png")
-ggsave("figures/nobels.eps",gg_combined,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
+gg_combined1 <- plot_grid(gg_age,gg_agedots,gg_children,gg_childrendots,nrow=2,align="hv",rel_heights = c(3,2),rel_widths = c(5,3))
 
 
+ggsave("figures/nobels.png",gg_combined1,width=6.5,height=4.5,dpi="retina",device="png")
+ggsave("figures/nobels.eps",gg_combined1,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
+
+
+# degree-granting institutions (top-10 list)
 almamater_dt <- dt[,.(.N),by=.(PhD)]
 almamater_dt <- almamater_dt[order(-N)]
 almamater_dt$PhD <- factor(almamater_dt$PhD,levels=almamater_dt$PhD)
@@ -66,12 +84,44 @@ gg_schools <- ggplot(almamater_dt[N>=4],aes(x=PhD,y=N))+
   geom_bar(stat="identity",fill="coral")+
   geom_text(aes(y=location,label=PhD_label,color=labelcol),hjust=0,vjust=0.5,angle=90)+
   scale_color_manual(values=c("coral","white"))+
-  labs(title="Top 10 universities that are alma mater to Nobel prize laureates in economics",x="",y="",caption = "Created by @DavidUbilava using data from Wikipedia and other online sources")+
+  labs(title="Top 10 universities that are Alma Mater to the Nobel Prize laureates in Economics",x="",y="",caption = "Created by @DavidUbilava\nBased on data from Wikipedia and other online sources")+
   theme_classic()+
   theme_guess()+
   theme(axis.line = element_blank(),axis.ticks = element_blank(),axis.text.x = element_blank())
 
-ggsave("figures/nobel_PhD.png",gg_schools,width=6.5,height=4.5,dpi="retina",device="png")
-ggsave("figures/nobel_PhD.eps",gg_schools,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
+ggsave("figures/nobel_schools.png",gg_schools,width=6.5,height=4.5,dpi="retina",device="png")
+ggsave("figures/nobel_schools.eps",gg_schools,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
+
+
+# lives before and after nobel
+life_dt <- dt[order(Born,Year,Died)]
+life_dt[,id := seq_len(.N)]
+
+life_dt[,`:=`(Life=Died-Born,Life_After=Died-Year)]
+
+mean(life_dt$Life,na.rm=T)
+mean(life_dt$Life_After,na.rm=T)
+
+life_dt[is.na(Died)]$Died <- 2023
+
+gg_lives <- ggplot(life_dt)+
+  geom_segment(aes(x=Born,xend=Died,y=id,yend=id),color="darkgray",linewidth=.5)+
+  geom_point(aes(x=Year,y=id),color="coral",size=1)+
+  labs(title="Lives of the Nobel Prize laureates in Economics",x="Year",y="",caption = "Created by @DavidUbilava\nBased on data from Wikipedia and other online sources")+
+  theme_classic()+
+  theme_guess()+
+  theme(axis.line = element_blank(),axis.ticks=element_blank(),axis.text.y = element_blank())
+
+gg_afterlives <- ggplot(life_dt)+
+  geom_segment(aes(x=0,xend=Life_After,y=id,yend=id),color="coral",linewidth=.5,na.rm=T)+
+  labs(title="Years after the Nobel")+
+  theme_classic()+
+  theme_guess()+
+  theme(axis.line = element_blank(),axis.ticks=element_blank(),axis.text.y = element_blank(),axis.title = element_blank())
+
+gg_combined2 <- plot_grid(gg_lives,gg_afterlives,ncol=2,align="hv",rel_widths = c(5,3))
+
+ggsave("figures/nobel_lives.png",gg_combined2,width=6.5,height=4.5,dpi="retina",device="png")
+ggsave("figures/nobel_lives.eps",gg_combined2,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
 
 
