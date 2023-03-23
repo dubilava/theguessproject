@@ -26,11 +26,11 @@ theme_guess <- function(){
 }
 
 
-dt <- fread("data/women.csv")
+dt <- fread("data/nobel_women.csv")
 
 dt[,`:=`(Age=Year-Born)]
 
-# lives before and after nobel
+# the feature graph
 dt[,`:=`(Field_id=ifelse(Field=="Economics",1,ifelse(Field=="Peace",2,ifelse(Field=="Literature",3,ifelse(Field=="Medicine",4,ifelse(Field=="Chemistry",5,6))))))]
 
 life_dt <- dt[order(Field_id,Born,Year,Died)]
