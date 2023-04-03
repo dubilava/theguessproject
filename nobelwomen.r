@@ -25,21 +25,21 @@ theme_guess <- function(){
   )
 }
 
+women_dt <- fread("data/nobel_women.csv")
+econ_dt <- fread("data/nobel_economics.csv")
 
-dt <- fread("data/nobel_women.csv")
 
-dt[,`:=`(Age=Year-Born)]
+women_dt[,`:=`(Age=Year-Born)]
+econ_dt[,`:=`(Age=Year-Born)]
+
 
 # the feature graph
-dt[,`:=`(Field_id=ifelse(Field=="Economics",1,ifelse(Field=="Peace",2,ifelse(Field=="Literature",3,ifelse(Field=="Medicine",4,ifelse(Field=="Chemistry",5,6))))))]
+women_dt[,`:=`(Field_id=ifelse(Field=="Economics",1,ifelse(Field=="Peace",2,ifelse(Field=="Literature",3,ifelse(Field=="Medicine",4,ifelse(Field=="Chemistry",5,6))))))]
 
-life_dt <- dt[order(Field_id,Born,Year,Died)]
+life_dt <- women_dt[order(Field_id,Born,Year,Died)]
 life_dt[,id := seq_len(.N)]
 
 life_dt[,`:=`(Life=Died-Born,Life_After=Died-Year)]
-
-mean(life_dt$Life,na.rm=T)
-mean(life_dt$Life_After,na.rm=T)
 
 life_dt[is.na(Died)]$Died <- 2023
 
@@ -90,5 +90,25 @@ gg_combined <- plot_grid(gg_lives,gg_children,ncol=2,align="hv",rel_widths = c(5
 
 ggsave("figures/nobel_women.png",gg_combined,width=6.5,height=4.5,dpi="retina",device="png")
 ggsave("figures/nobel_women.eps",gg_combined,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
+
+
+children_econ_dt <- econ_dt[,.N,by=Children]
+children_econ_dt <- children_econ_dt[order(Children)]
+children_econ_dt[,`:=`(CDF=cumsum(N)/sum(N))]
+
+children_women_dt <- women_dt[,.N,by=Children]
+children_women_dt <- children_women_dt[order(Children)]
+children_women_dt[,`:=`(CDF=cumsum(N)/sum(N))]
+
+combined_dt 
+
+gg_childrendots <- ggplot(women_dt,aes(x=Children))+
+  geom_dotplot(fill="darkgray",color="darkgray",binwidth=.1)+
+  coord_cartesian(xlim=c(0,6))+
+  theme_classic()+
+  theme_guess()+
+  theme(axis.line = element_blank(),axis.ticks=element_blank(),axis.text=element_blank(),axis.title = element_blank(),plot.margin=margin(0,0,0,0,"cm"))
+
+
 
 

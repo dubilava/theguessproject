@@ -3,30 +3,65 @@ library(data.table)
 library(ggplot2)
 library(Cairo)
 library(cowplot)
+library(magick)
 
 # plot aesthetics
 theme_guess <- function(){
   theme(
     panel.background=element_rect(fill="transparent",color=NA),
     plot.background=element_rect(fill="transparent",color=NA),
-    legend.background=element_rect(fill="transparent",color=NA),
     plot.title=element_text(size=12,colour="dimgray"),
+    plot.caption = element_text(colour="slategray"),
+    # plot.margin=unit(c(.5,.5,1.0,.5),"lines"),
     axis.title=element_text(size=12,colour="dimgray"),
     axis.text=element_text(size=10,colour="dimgray",margin=margin(t=1,r=1,b=1,l=1)),
     axis.line=element_line(colour="darkgray"),
     axis.ticks=element_line(colour="darkgray"),
+    legend.background=element_rect(fill="transparent",color=NA),
     legend.position="none",
     legend.title=element_blank(),
     legend.text=element_text(size=10,colour="dimgray"),
     legend.key.size=unit(.75,'lines'),
-    plot.caption = element_text(colour="slategray"),
     strip.background=element_blank(),
     strip.text=element_text(size=10,colour="dimgray",face="bold",margin=margin(.1,0,.1,0,"cm"))
   )
 }
 
+# load the logo (for branding)
+logo <- image_read("logo.png")
 
-dt <- fread("data/nobel_economics.csv")
+# load data
+load("data/nobel_economics.RData")
+
+# institutions ----
+
+# degree-granting institutions (top-10 list)
+almamater_dt <- dt[,.(.N),by=.(PhD)]
+almamater_dt <- almamater_dt[order(-N)]
+almamater_dt$PhD <- factor(almamater_dt$PhD,levels=almamater_dt$PhD)
+
+almamater_dt[,`:=`(PhD_label=paste0(PhD," (",N,")"),location=ifelse(N>6,0.5,N+0.5),labelcol=ifelse(N>6,"white","coral"))]
+
+gg_schools <- ggplot(almamater_dt[N>=4],aes(x=PhD,y=N))+
+  geom_bar(stat="identity",fill="coral")+
+  geom_text(aes(y=location,label=PhD_label,color=labelcol),hjust=0,vjust=0.5,angle=90)+
+  scale_color_manual(values=c("coral","white"))+
+  labs(title="Top 10 universities that are Alma Mater to the Nobel Prize laureates in Economics",x="",y="",caption = "Created by @DavidUbilava\nBased on data from Wikipedia and other online sources")+
+  theme_classic()+
+  theme_guess()+
+  theme(axis.line=element_blank(),axis.ticks=element_blank(),axis.text.x=element_blank())
+
+# add logo
+gg_schools <- ggdraw() +
+  draw_image(logo,scale=.15,x=1,hjust=1,halign=0,valign=0,clip="off") +
+  draw_plot(gg_schools)
+
+ggsave("figures/nobel_schools.png",gg_schools,width=6.5,height=4.5,dpi="retina",device="png")
+ggsave("figures/nobel_schools.eps",gg_schools,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
+
+
+
+# age and children ----
 
 dt[,`:=`(Age=Year-Born)]
 
@@ -68,32 +103,20 @@ gg_childrendots <- ggplot(dt,aes(x=Children))+
 
 gg_combined1 <- plot_grid(gg_age,gg_agedots,gg_children,gg_childrendots,nrow=2,align="hv",rel_heights = c(3,2),rel_widths = c(5,3))
 
+gg_combined1 <- ggdraw() +
+  draw_image(logo,scale=.15,x=1,hjust=1,halign=0,valign=0,clip="off") +
+  draw_plot(gg_combined1)
+
 
 ggsave("figures/nobels.png",gg_combined1,width=6.5,height=4.5,dpi="retina",device="png")
 ggsave("figures/nobels.eps",gg_combined1,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
 
 
-# degree-granting institutions (top-10 list)
-almamater_dt <- dt[,.(.N),by=.(PhD)]
-almamater_dt <- almamater_dt[order(-N)]
-almamater_dt$PhD <- factor(almamater_dt$PhD,levels=almamater_dt$PhD)
-
-almamater_dt[,`:=`(PhD_label=paste0(PhD," (",N,")"),location=ifelse(N>6,0.5,N+0.5),labelcol=ifelse(N>6,"white","coral"))]
-
-gg_schools <- ggplot(almamater_dt[N>=4],aes(x=PhD,y=N))+
-  geom_bar(stat="identity",fill="coral")+
-  geom_text(aes(y=location,label=PhD_label,color=labelcol),hjust=0,vjust=0.5,angle=90)+
-  scale_color_manual(values=c("coral","white"))+
-  labs(title="Top 10 universities that are Alma Mater to the Nobel Prize laureates in Economics",x="",y="",caption = "Created by @DavidUbilava\nBased on data from Wikipedia and other online sources")+
-  theme_classic()+
-  theme_guess()+
-  theme(axis.line = element_blank(),axis.ticks = element_blank(),axis.text.x = element_blank())
-
-ggsave("figures/nobel_schools.png",gg_schools,width=6.5,height=4.5,dpi="retina",device="png")
-ggsave("figures/nobel_schools.eps",gg_schools,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
 
 
-# lives before and after nobel
+
+# lives after nobel ----
+
 life_dt <- dt[order(Born,Year,Died)]
 life_dt[,id := seq_len(.N)]
 
@@ -120,6 +143,10 @@ gg_afterlives <- ggplot(life_dt)+
   theme(axis.line = element_blank(),axis.ticks=element_blank(),axis.text.y = element_blank(),axis.title = element_blank())
 
 gg_combined2 <- plot_grid(gg_lives,gg_afterlives,ncol=2,align="hv",rel_widths = c(5,3))
+
+gg_combined2 <- ggdraw() +
+  draw_image(logo,scale=.15,x=1,hjust=1,halign=0,valign=0,clip="off") +
+  draw_plot(gg_combined2)
 
 ggsave("figures/nobel_lives.png",gg_combined2,width=6.5,height=4.5,dpi="retina",device="png")
 ggsave("figures/nobel_lives.eps",gg_combined2,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
