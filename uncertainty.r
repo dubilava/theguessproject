@@ -15,8 +15,8 @@ theme_guess <- function(){
     panel.background=element_rect(fill="transparent",color=NA),
     plot.background=element_rect(fill="transparent",color=NA),
     plot.title=element_text(size=12,colour="dimgray"),
-    plot.caption = element_text(colour="slategray"),
-    # plot.margin=unit(c(.5,.5,1.0,.5),"lines"),
+    plot.caption = element_text(colour="slategray",hjust=0),
+    plot.margin=unit(c(0,0,0,1.5),"lines"),
     axis.title=element_text(size=12,colour="dimgray"),
     axis.text=element_text(size=10,colour="dimgray",margin=margin(t=1,r=1,b=1,l=1)),
     axis.line=element_line(colour="darkgray"),
@@ -45,6 +45,8 @@ raw_forecasts_dt[,`:=`(forecast_qtr=yearquarter(forecast_date),year_qtr=yearquar
 raw_forecasts_dt[,horizon:=year_qtr-forecast_qtr]
 
 forecast_ur_dt <- raw_forecasts_dt[horizon>=0 & year(forecast_qtr) >= 1993,.(year_qtr,forecast_qtr,forecast_value=value,horizon)]
+
+hpi_dt <- data.table(read_abs(cat_no = "6401.0"))
 
 raw_actual_ur <- read_abs_series("A84423050A")
 raw_actual_ur_dt <- data.table(raw_actual_ur)
