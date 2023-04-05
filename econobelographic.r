@@ -74,9 +74,8 @@ gg_schools <- ggplot(almamater_dt[N>=4],aes(x=PhD,y=N))+
   theme(axis.line=element_blank(),axis.text.x=element_blank())
 
 # add logo
-gg_schools <- ggdraw() +
-  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off") +
-  draw_plot(gg_schools)
+gg_schools <- ggdraw(gg_schools) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
 
 gg_schools
 
@@ -98,36 +97,36 @@ gg_age <- ggplot(dt,aes(x=Year,y=Age,fill=factor(id)))+
   coord_cartesian(ylim=c(0,90))+
   labs(title="Age of the laureate at the time of award of the Nobel Prize in Economics")+
   theme_guess()+
-  theme(axis.line=element_blank(),axis.text.y=element_blank(),axis.title.y=element_blank())
+  theme(axis.line=element_blank(),axis.text.y=element_blank(),axis.title.y=element_blank(),plot.margin=margin(0,0,.25,3.0,"lines"))
 
 gg_agedots <- ggplot(dt,aes(x=Age))+
   geom_dotplot(fill="coral",color="lightgray",binwidth=3,method="histodot")+
   coord_flip(xlim=c(0,90))+
-  labs(title="")+
+  labs(title="",x="",y="",caption="")+
   theme_guess()+
-  theme(axis.line = element_blank(),axis.text.x=element_blank(),axis.title = element_blank(),plot.margin=margin(0,0,.1,0,"lines"))
+  theme(axis.line = element_blank(),axis.text.x=element_blank(),axis.title = element_blank(),plot.margin=margin(0,0,.25,0,"lines"))
 
 
 gg_children <- ggplot(dt,aes(x=Year,y=Children,group=factor(id)))+
   geom_bar(stat="identity",width=.8,position=position_dodge(width=.9),fill="darkgray")+
   scale_y_reverse()+
-  labs(title="Number of children of the laureate",caption="Created by @DavidUbilava\nData from Wikipedia and other online sources")+
+  coord_cartesian(ylim=c(6,0))+
+  labs(title="Number of children of the laureate",x="",y="",caption="Created by @DavidUbilava\nData from Wikipedia and other online sources")+
   theme_guess()+
-  theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.text.y=element_blank(),axis.title=element_blank())
+  theme(axis.line=element_blank(),axis.text.x=element_blank(),axis.text.y=element_blank(),axis.title=element_blank(),plot.margin=margin(0,0,.25,3.0,"lines"))
 
 gg_childrendots <- ggplot(dt,aes(x=Children))+
-  geom_dotplot(fill="lightgray",color="darkgray",binwidth=.4)+
+  geom_dotplot(fill="lightgray",color="darkgray",binwidth=.35)+
   scale_x_reverse()+
-  coord_flip()+
-  labs(title="",caption="")+
+  coord_flip(xlim=c(6,0))+
+  labs(title="",x="",y="",caption="")+
   theme_guess()+
-  theme(axis.line = element_blank(),axis.text.x = element_blank(),axis.title = element_blank(),plot.margin=margin(0,0,.1,0,"lines"))
+  theme(axis.line = element_blank(),axis.text.x = element_blank(),axis.title = element_blank(),plot.margin=margin(0,0,.25,0,"lines"))
 
 gg_combined1 <- plot_grid(gg_age,gg_agedots,gg_children,gg_childrendots,nrow=2,align="h",rel_heights = c(3,2),rel_widths = c(5,3))
 
-gg_combined1 <- ggdraw() +
-  draw_image(logo,scale=.15,x=1,hjust=1,halign=0,valign=0,clip="off") +
-  draw_plot(gg_combined1)
+gg_combined1 <- ggdraw(gg_combined1) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
 
 gg_combined1
 
@@ -154,23 +153,22 @@ life_dt[is.na(Died)]$Died <- 2023
 gg_lives <- ggplot(life_dt)+
   geom_segment(aes(x=Born,xend=Died,y=id,yend=id),color="darkgray",linewidth=.5)+
   geom_point(aes(x=Year,y=id),color="coral",size=1)+
-  labs(title="Lives of the Nobel Prize laureates in Economics",x="Year",y="",caption = "Created by @DavidUbilava\nData from Wikipedia and other online sources")+
+  labs(title="Nobel Prize laureates in Economics",x="Year",y="",caption = "Created by @DavidUbilava\nData from Wikipedia and other online sources")+
   theme_classic()+
   theme_guess()+
-  theme(axis.line = element_blank(),axis.ticks=element_blank(),axis.text.y = element_blank(),plot.margin=margin(0,0,0,2.5,"lines"))
+  theme(axis.line = element_blank(),axis.ticks=element_blank(),axis.text.y = element_blank(),plot.margin=margin(0,0,.25,2.75,"lines"))
 
 gg_afterlives <- ggplot(life_dt)+
   geom_segment(aes(x=0,xend=Life_After,y=id,yend=id),color="coral",linewidth=.5,na.rm=T)+
-  labs(title="Years after the Nobel")+
+  labs(title="Years after the Nobel",x="",y="",caption="")+
   theme_classic()+
   theme_guess()+
-  theme(axis.line = element_blank(),axis.ticks=element_blank(),axis.text.y = element_blank(),axis.title = element_blank(),plot.margin=margin(0,0,0,0,"lines"))
+  theme(axis.line = element_blank(),axis.ticks=element_blank(),axis.text.y = element_blank(),axis.title = element_blank(),plot.margin=margin(0,0,.25,0,"lines"))
 
 gg_combined2 <- plot_grid(gg_lives,gg_afterlives,ncol=2,align="h",rel_widths = c(5,3))
 
-gg_combined2 <- ggdraw() +
-  draw_image(logo,scale=.15,x=1,hjust=1,halign=0,valign=0,clip="off") +
-  draw_plot(gg_combined2)
+gg_combined2 <- ggdraw(gg_combined2) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
 
 gg_combined2
 
