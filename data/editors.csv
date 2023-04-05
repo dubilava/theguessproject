@@ -1,0 +1,110 @@
+Journal,Date,Role,FirstName,Surname,Affiliation1,Country1,Continent1,Location1,Affiliation2,Country2,Continent2,Location2,Names
+AER,1/08/2020,co-editor,Roland,Benabou,Princeton,USA,North America,"40.343139, -74.655129",,,,,Roland
+AER,1/08/2020,co-editor,Sylvain,Chassang,"NYU, New York, NY",USA,North America,"40.729542, -73.996564",,,,,Sylvain
+AER,1/08/2020,co-editor,Stefano,DellaVigna,UC Berkeley,USA,North America,"37.872026, -122.258384",,,,,Stefano
+AER,1/08/2020,co-editor,Liran,Einav,"Stanford, California",USA,North America,"37.427436, -122.169766",,,,,Liran
+AER,1/08/2020,co-editor,Jeffrey,Ely,"Northwestern, Evanston, Illinois",USA,North America,"42.056483, -87.675114",,,,,Jeffrey
+AER,1/08/2020,co-editor,Mikhail,Golosov,Chicago,USA,North America,"41.788584, -87.598889",,,,,Mikhail
+AER,1/08/2020,co-editor,Pierre,Gourinchas,UC Berkeley,USA,North America,"37.872026, -122.258385",,,,,Pierre-Olivier
+AER,1/08/2020,co-editor,Henrik,Kleven,Princeton,USA,North America,"40.343139, -74.655130",,,,,Henrik
+AER,1/08/2020,co-editor,Thomas,Lemieux,"UBC, Vancouver",Canada,North America,"49.260584, -123.245973",,,,,Thomas
+AER,1/08/2020,co-editor,Emi,Nakamura,UC Berkeley,USA,North America,"37.872026, -122.258386",,,,,Emi
+AER,1/08/2020,editor,Esther,Duflo,"MIT, Cambridge, Massachusetts",USA,North America,"42.359964, -71.094351",,,,,Esther
+Econometrica,28/07/2020,co-editor,Oriana,Bandiera,LSE,UK,Europe,"51.514479, -0.116746",,,,,Oriana
+Econometrica,28/07/2020,co-editor,Dave,Donaldson,"MIT, Cambridge, Massachusetts",USA,North America,"42.359964, -71.094361",,,,,Dave
+Econometrica,28/07/2020,co-editor,Charles,Jones,"Stanford, California",USA,North America,"37.427436, -122.169778",,,,,Charles
+Econometrica,28/07/2020,co-editor,Barton,Lipman,Boston University,USA,North America,"42.350389, -71.105499",,,,,Barton
+Econometrica,28/07/2020,co-editor,Alessandro,Lizzeri,Princeton,USA,North America,"40.343139, -74.655139",,,,,Alessandro
+Econometrica,28/07/2020,co-editor,Aviv,Nevo,"University of Pennsylvania, Philadelphia",USA,North America,"39.952206, -75.193461",,,,,Aviv
+Econometrica,28/07/2020,co-editor,Asher,Wolinsky,"Northwestern, Evanston, Illinois",USA,North America,"42.056483, -87.675124",,,,,Asher
+Econometrica,28/07/2020,editor,Guido,Imbens,"Stanford, California",USA,North America,"37.427436, -122.169779",,,,,Guido
+Journal of Political Economy,30/07/2020,editor,James,Heckman,Chicago,USA,North America,"41.788584, -87.598944",,,,,James
+Journal of Political Economy,30/07/2020,editor,Emir,Kamenica,Chicago,USA,North America,"41.788584, -87.598945",,,,,Emir
+Journal of Political Economy,30/07/2020,editor,Greg,Kaplan,Chicago,USA,North America,"41.788584, -87.598946",,,,,Greg
+Journal of Political Economy,30/07/2020,editor,John,List,Chicago,USA,North America,"41.788584, -87.598947",,,,,John
+Journal of Political Economy,30/07/2020,editor,Magne,Mogstad,Chicago,USA,North America,"41.788584, -87.598948",,,,,Magne
+Journal of Political Economy,30/07/2020,editor,Chad,Syverson,Chicago,USA,North America,"41.788584, -87.598949",,,,,Chad
+Journal of Political Economy,30/07/2020,lead editor,Harald,Uhlig,Chicago,USA,North America,"41.788584, -87.598950",,,,,Harald
+Quarterly Journal of Economics,30/07/2020,editorial board,Pol,Antras,"Harvard, Cambridge",USA,North America,"42.376971, -71.116785",,,,,Pol
+Quarterly Journal of Economics,30/07/2020,editorial board,Robert,Barro,"Harvard, Cambridge",USA,North America,"42.376971, -71.116786",,,,,Robert
+Quarterly Journal of Economics,30/07/2020,editorial board,Lawrence,Katz,"Harvard, Cambridge",USA,North America,"42.376971, -71.116787",,,,,Lawrence
+Quarterly Journal of Economics,30/07/2020,editorial board,Andrei,Schleifer,"Harvard, Cambridge",USA,North America,"42.376971, -71.116788",,,,,Andrei
+Quarterly Journal of Economics,30/07/2020,editorial board,Stefanie,Stantcheva,"Harvard, Cambridge",USA,North America,"42.376971, -71.116789",,,,,Stefanie
+Review of Economic Studies,29/07/2020,director,Aureo,de Paula,UCL,UK,Europe,"51.524643, -0.134064",,,,,Aureo
+Review of Economic Studies,29/07/2020,director,Mike,Elsby,Edinburgh,UK,Europe,"55.944552, -3.189477",,,,,Mike
+Review of Economic Studies,29/07/2020,director,Nagore,Iriberri,"University of the Basque Country, Bilbao",Spain,Europe,"43.337386, -2.969921",,,,,Nagore
+Review of Economic Studies,29/07/2020,director,Dimitri,Vayanos,LSE,UK,Europe,"51.514479, -0.116773",,,,,Dimitri
+Review of Economic Studies,29/07/2020,director,Fabian,Waldinger,"Ludwig-Maximilians-Universitat, Munich",Germany,Europe,"48.151141, 11.580140",,,,,Fabian
+Review of Economic Studies,29/07/2020,director,Mirko,Wiederhold,"Sciences Po, Paris",France,Europe,"48.853976, 2.328747",,,,,Mirko
+Review of Economic Studies,29/07/2020,editorial board,Johannes,Abeler,Oxford,UK,Europe,"51.754826, -1.254615",,,,,Johannes
+Review of Economic Studies,29/07/2020,editorial board,Timo,Boppart,Stockholm University,Sweden,Europe,"59.362286, 18.057810",,,,,Timo
+Review of Economic Studies,29/07/2020,editorial board,Davide,Cantoni,"Ludwig-Maximilians-Universitat, Munich",Germany,Europe,"48.151141, 11.580142",,,,,Davide
+Review of Economic Studies,29/07/2020,editorial board,Nicolas,Coeurdacier,"Sciences Po, Paris",France,Europe,"48.853976, 2.328748",,,,,Nicolas
+Review of Economic Studies,29/07/2020,editorial board,Francesco,Decarolis,"Bocconi, Milan",Italy,Europe,"45.448521, 9.189811",,,,,Francesco
+Review of Economic Studies,29/07/2020,editorial board,Xavier,d'Haultfoeuille,"CREST, Paris",France,Europe,"48.711135, 2.207687",,,,,Xavier
+Review of Economic Studies,29/07/2020,editorial board,Swati,Dhingra,LSE,UK,Europe,"51.514479, -0.116774",,,,,Swati
+Review of Economic Studies,29/07/2020,editorial board,Ruben,Enikolopov,"Pompeu Fabra, Barcelona",Spain,Europe,"41.379177, 2.179594","New Economic School, Moscow",Russia,Europe,"55.698423, 37.394391",Ruben
+Review of Economic Studies,29/07/2020,editorial board,Alessandro,Gavazza,LSE,UK,Europe,"51.514479, -0.116775",,,,,Alessandro
+Review of Economic Studies,29/07/2020,editorial board,Jeanne,Hagenback,"Sciences Po, Paris",France,Europe,"48.853976, 2.328749",,,,,Jeanne
+Review of Economic Studies,29/07/2020,editorial board,Bard,Harstad,Oslo,Norway,Europe,"59.939988, 10.721627",,,,,Bard
+Review of Economic Studies,29/07/2020,editorial board,Christian,Hellwig,Toulouse,France,Europe,"43.605413, 1.431886",,,,,Christian
+Review of Economic Studies,29/07/2020,editorial board,Xavier,Jaravel,LSE,UK,Europe,"51.514479, -0.116776",,,,,Xavier
+Review of Economic Studies,29/07/2020,editorial board,Toru,Kitagawa,UCL,UK,Europe,"51.524643, -0.134065",,,,,Toru
+Review of Economic Studies,29/07/2020,editorial board,Terri,Kneeland,UCL,UK,Europe,"51.524643, -0.134066",,,,,Terri
+Review of Economic Studies,29/07/2020,editorial board,Peter,Kondor,LSE,UK,Europe,"51.514479, -0.116777",,,,,Peter
+Review of Economic Studies,29/07/2020,editorial board,Dennis,Kristensen,UCL,UK,Europe,"51.524643, -0.134067",,,,,Dennis
+Review of Economic Studies,29/07/2020,editorial board,Stephan,Lauermann,Bonn,Germany,Europe,"50.726772, 7.086460",,,,,Stephan
+Review of Economic Studies,29/07/2020,editorial board,Attila,Lindner,UCL,UK,Europe,"51.524643, -0.134068",,,,,Attila
+Review of Economic Studies,29/07/2020,editorial board,Joan,Llull,Autonomous University of Barcelona,Spain,Europe,"41.501892, 2.104809",,,,,Joan
+Review of Economic Studies,29/07/2020,editorial board,Katrine,Loken,Bergen,Norway,Europe,"60.387890, 5.321916",,,,,Katrine
+Review of Economic Studies,29/07/2020,editorial board,Kalina,Manova,UCL,UK,Europe,"51.524643, -0.134069",,,,,Kalina
+Review of Economic Studies,29/07/2020,editorial board,Alberto,Martinelli,"Pompeu Fabra, Barcelona",Spain,Europe,"41.379177, 2.179607",,,,,Alberto
+Review of Economic Studies,29/07/2020,editorial board,Monica,Martinez-Bravo,"CEMFI, Madrid",Spain,Europe,"40.414200, -3.689772",,,,,Monica
+Review of Economic Studies,29/07/2020,editorial board,Guy,Michaels,LSE,UK,Europe,"51.514479, -0.116778",,,,,Guy
+Review of Economic Studies,29/07/2020,editorial board,Benjamin,Moll,LSE,UK,Europe,"51.514479, -0.116779",,,,,Benjamin
+Review of Economic Studies,29/07/2020,editorial board,Andreas,Moxnes,Oslo,Norway,Europe,"59.939988, 10.721628",,,,,Andreas
+Review of Economic Studies,29/07/2020,editorial board,Martin,Oehmke,LSE,UK,Europe,"51.514479, -0.116780",,,,,Martin
+Review of Economic Studies,29/07/2020,editorial board,Elias,Papaioannou,London Business School,UK,Europe,"51.526162, -0.160782",,,,,Elias
+Review of Economic Studies,29/07/2020,editorial board,Daniel,Paravisini,LSE,UK,Europe,"51.514479, -0.116781",,,,,Daniel
+Review of Economic Studies,29/07/2020,editorial board,Antonio,Penta,"Pompeu Fabra, Barcelona",Spain,Europe,"41.379177, 2.179608",,,,,Antonio
+Review of Economic Studies,29/07/2020,editorial board,Eduardo,Perez-Richet,"Sciences Po, Paris",France,Europe,"48.853976, 2.328750",,,,,Eduardo
+Review of Economic Studies,29/07/2020,editorial board,Maria,Petrova,"IPEG, Barcelona",Spain,Europe,"41.390076, 2.190352",,,,,Maria
+Review of Economic Studies,29/07/2020,editorial board,Giacomo,Ponzetto,"Pompeu Fabra, Barcelona",Spain,Europe,"41.379177, 2.179609",,,,,Giacomo
+Review of Economic Studies,29/07/2020,editorial board,Christoph,Rothe,Mannheim,Germany,Europe,"49.483714, 8.462305",,,,,Christoph
+Review of Economic Studies,29/07/2020,editorial board,Edouard,Schaal,"Pompeu Fabra, Barcelona",Spain,Europe,"41.379177, 2.179610",,,,,Edouard
+Review of Economic Studies,29/07/2020,editorial board,Florian,Scheuer,Zurich,Switzerland,Europe,"47.374322, 8.550928",,,,,Florian
+Review of Economic Studies,29/07/2020,editorial board,Johannes,Spinnewijn,LSE,UK,Europe,"51.514479, -0.116782",,,,,Johannes
+Review of Economic Studies,29/07/2020,editorial board,Jakub,Steiner,"CERGE-EI, Charles University, Prague",Czech Republic,Europe,"50.083297, 14.428955",,,,,Jakub
+Review of Economic Studies,29/07/2020,editorial board,Vincent,Sterk,UCL,UK,Europe,"51.524643, -0.134070",,,,,Vincent
+Review of Economic Studies,29/07/2020,editorial board,Olivier,Tercieux,Paris School of Economics,France,Europe,"48.822471, 2.330809",,,,,Olivier
+Review of Economic Studies,29/07/2020,editorial board,Michele,Tertilt,Mannheim,Germany,Europe,"49.483714, 8.462306",,,,,Michele
+Review of Economic Studies,29/07/2020,editorial board,Martin,Weidner,UCL,UK,Europe,"51.524643, -0.134071",,,,,Martin
+Review of Economic Studies,29/07/2020,editorial board,Takuro,Yamashita,Toulouse,France,Europe,"43.605413, 1.431887",,,,,Takuro
+Review of Economic Studies,29/07/2020,editorial board,David,Yanagizawa-Drott,Zurich,Switzerland,Europe,"47.374322, 8.550929",,,,,David
+Review of Economic Studies,29/07/2020,editorial board,Noam,Yuchtman,LSE,UK,Europe,"51.514479, -0.116783",,,,,Noam
+Review of Economic Studies,29/07/2020,foreign editor,Manuel,Amador,"Minnesota, Minneapolis, Minnesota",USA,North America,"44.974043, -93.227873",,,,,Manuel
+Review of Economic Studies,29/07/2020,foreign editor,Francisco,Buera,"Washington University in St. Louis, Missouri",USA,North America,"38.648848, -90.310699",,,,,Francisco
+Review of Economic Studies,29/07/2020,foreign editor,Melissa,Dell,"Harvard, Cambridge",USA,North America,"42.376971, -71.116790",,,,,Melissa
+Review of Economic Studies,29/07/2020,foreign editor,Chao,Fu,"Wisconsin, Madison",USA,North America,"43.076647, -89.412668",,,,,Chao
+Review of Economic Studies,29/07/2020,foreign editor,Marina,Halac,"Yale, New Haven, Connecticut",USA,North America,"41.316349, -72.922425",,,,,Marina
+Review of Economic Studies,29/07/2020,foreign editor,Peter,Hansen,"North Carolina, Chapel Hill, North Carolina",USA,North America,"35.904756, -79.046847",,,,,Peter
+Review of Economic Studies,29/07/2020,foreign editor,Navin,Kartik,"Columbia, New York, New York",USA,North America,"40.807511, -73.962690",,,,,Navin
+Review of Economic Studies,29/07/2020,foreign editor,Patrick,Kline,UC Berkeley,USA,North America,"37.872026, -122.258435",,,,,Patrick
+Review of Economic Studies,29/07/2020,foreign editor,Guillermo,Ordonez,"University of Pennsylvania, Philadelphia",USA,North America,"39.952206, -75.193499",,,,,Guillermo
+Review of Economic Studies,29/07/2020,foreign editor,Mar,Reguant,"Northwestern, Evanston, Illinois",USA,North America,"42.056483, -87.675165",,,,,Mar
+Review of Economic Studies,29/07/2020,foreign editor,Andres,Santos,UCLA,USA,North America,"34.068961, -118.445116",,,,,Andres
+Review of Economic Studies,29/07/2020,foreign editor,Joshua,Schwartzstein,"Harvard, Cambridge",USA,North America,"42.376971, -71.116791",,,,,Joshua
+Review of Economic Studies,29/07/2020,foreign editor,Stefanie,Stantcheva,"Harvard, Cambridge",USA,North America,"42.376971, -71.116792",,,,,Stefanie
+Review of Economic Studies,29/07/2020,foreign editor,Jon,Steinsson,UC Berkeley,USA,North America,"37.872026, -122.258436",,,,,Jon
+Review of Economic Studies,29/07/2020,foreign editor,Johannes,Stroebel,"NYU, New York, NY",USA,North America,"40.729542, -73.996595",,,,,Johannes
+Review of Economic Studies,29/07/2020,foreign editor,Ebonya,Washington,"Yale, New Haven, Connecticut",USA,North America,"41.316349, -72.922426",,,,,Ebonya
+Review of Economic Studies,29/07/2020,foreign editor,Alexander,Wolitzky,"MIT, Cambridge, Massachusetts",USA,North America,"42.359964, -71.094383",,,,,Alexander
+Review of Economic Studies,29/07/2020,foreign editor,Pierre,Yared,"Columbia, New York, New York",USA,North America,"40.807511, -73.962691",,,,,Pierre
+Review of Economic Studies,29/07/2020,joint managing editor,Thomas,Chaney,"Sciences Po, Paris",France,Europe,"48.853976, 2.328746",,,,,Thomas
+Review of Economic Studies,29/07/2020,joint managing editor,Andrea,Galeotti,London Business School,UK,Europe,"51.526162, -0.160781",,,,,Andrea
+Review of Economic Studies,29/07/2020,joint managing editor,Nicola,Gennaioli,"Bocconi, Milan",Italy,Europe,"45.448521, 9.189810",,,,,Nicola
+Review of Economic Studies,29/07/2020,joint managing editor,Veronica,Guerrieri,Chicago,USA,North America,"41.788584, -87.598962",,,,,Veronica
+Review of Economic Studies,29/07/2020,joint managing editor,Kurt,Mitman,Stockholm University,Sweden,Europe,"59.362286, 18.057810",,,,,Kurt
+Review of Economic Studies,29/07/2020,joint managing editor,Francesca,Molinari,"Cornell, Ithaca, New York",USA,North America,"42.453433, -76.473547",,,,,Francesca
+Review of Economic Studies,29/07/2020,joint managing editor,Uta,Schoenberg,UCL,UK,Europe,"51.524643, -0.134063",,,,,Uta
+Review of Economic Studies,29/07/2020,joint managing editor,Adam,Szeidl,"Central European University, Budapest",Hungary,Europe,"47.500416, 19.049655",,,,,Adam
