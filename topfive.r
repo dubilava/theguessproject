@@ -2,56 +2,45 @@
 library(data.table)
 library(ggplot2)
 library(ggthemes)
+library(ggrepel)
 library(Cairo)
 library(cowplot)
 library(magick)
 library(sf)
-library(showtext)
-font_add_google(name="Syne Mono")
-showtext_auto()
+# library(showtext)
+# font_add_google(name="Syne Mono")
+# showtext_auto()
 library("rnaturalearth")
 library("rnaturalearthdata")
 # devtools::install_github("ropensci/rnaturalearthhires")
 library(gender)
 
-
 world <- ne_countries(scale="medium",returnclass="sf")
-
-# for transformations
-world_crs <- '+proj=robin'
-
-usa_crs <- '+proj=aeqd +lat_0=45 +lon_0=-105 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs'
-
-eu_crs <- '+proj=aeqd +lat_0=54 +lon_0=10 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs'
-
-atl_crs <- '+proj=aeqd +lat_0=50 +lon_0=-70 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs'
-
-world_tr <- st_transform(world,crs=world_crs)
 
 # plot aesthetics
 theme_guess <- function(
     base_size=12,
-    base_family = "Syne Mono",
-    title_family = "Syne Mono",
+    base_family = "sans",
+    title_family = "sans",
     border=FALSE
 ){
   theme_foundation(base_size=base_size,base_family=base_family) +
     theme(
-      line = element_line(linetype=1,colour="darkgray"),
+      line = element_line(linetype=1,colour="black"),
       rect = element_rect(linetype=0,colour=NA),
-      text = element_text(colour="darkgray"),
-      title = element_text(family=title_family,size=rel(2.2)),
-      panel.background=element_rect(fill="transparent",color=NA),
-      panel.grid = element_line(colour=NULL,linetype=3,linewidth=.4),
-      panel.grid.major = element_line(colour = "darkgray"),
+      text = element_text(colour="black"),
+      # title = element_text(family=title_family,size=rel(1.1)),
+      # panel.background=element_rect(fill="transparent",color=NA),
+      panel.grid = element_line(colour=NULL,linetype=3),
+      panel.grid.major = element_line(colour="darkgray"),
       panel.grid.major.x = element_blank(),
       panel.grid.minor = element_blank(),
-      plot.background=element_rect(fill="transparent",color=NA),
-      plot.title=element_text(face="bold",colour="slategray",hjust=0,lineheight=.5),
-      plot.caption = element_text(family="Syne Mono",colour="slategray",hjust=0,size=rel(1),lineheight=.5,margin=margin(t=1,r=1,b=1,l=1)),
-      plot.margin=unit(c(.0,.0,0.25,2.0),"lines"),
+      # plot.background=element_rect(fill="transparent",color=NA),
+      plot.title=element_text(colour="black",hjust=0,size=rel(1.1)),
+      plot.caption = element_text(family=base_family,size=rel(0.7),colour="slategray",hjust=0,margin=margin(t=1,r=1,b=1,l=1)),
+      plot.margin=unit(c(0.25,0.25,0.25,1.25),"lines"),
       # axis.title = element_blank(),
-      axis.text = element_text(face = "bold", size = rel(2),margin=margin(t=1,r=1,b=1,l=1)),
+      axis.text = element_text(family=base_family,size=rel(0.9),margin=margin(t=1,r=1,b=1,l=1)),
       axis.text.x = element_text(colour = NULL),
       axis.text.y = element_text(colour = NULL),
       axis.ticks = element_blank(),
@@ -60,11 +49,11 @@ theme_guess <- function(
       legend.background=element_rect(fill="transparent",color=NA),
       legend.position="none",
       legend.title=element_blank(),
-      legend.text=element_text(family="Syne Mono",size=12,colour="dimgray"),
+      legend.text=element_text(family=base_family,size=rel(0.9),colour="slategray"),
       legend.key = element_rect(fill="transparent"),
       legend.key.size=unit(.75,'lines'),
       strip.background=element_blank(),
-      strip.text=element_text(family="Syne Mono",size=12,colour="dimgray",face="bold",margin=margin(.1,0,.1,0,"cm"))
+      strip.text=element_text(size=rel(.8),colour="slategray",margin=margin(.1,0,.1,0,"cm"))
     )
 }
 
@@ -72,7 +61,7 @@ theme_guess <- function(
 # load the logo (for branding)
 logo <- image_read("logo.png")
 
-# load data
+# # load data
 # dt <- fread("data/editors.csv")
 # 
 # unique_dt <- unique(dt[,.(FirstName)])
@@ -85,42 +74,130 @@ logo <- image_read("logo.png")
 
 load("data/editors.RData")
 
-d <- CJ(c("AER","ECTA","JPE","QJE","REStud"),2020:2023,c("male","female"))
+dt[,`:=`(Longitude=round(Longitude,3),Latitude=round(Latitude,3))]
+
+
+# gender ----
+
+jlist <- unique(dt$Journal)
+ylist <- unique(dt$Year)
+glist <- unique(dt$Gender)
+
+d <- CJ(jlist,ylist,glist)
 colnames(d) <- c("Journal","Year","Gender")
 
 gender_dt <- dt[,.(.N),by=.(Journal,Year,Gender)]
 gender_dt <- gender_dt[order(Journal,Gender,Year)]
+gender_dt <- merge(d,gender_dt,all.x=T)
+gender_dt[is.na(gender_dt), ] <- 0 
 gender_dt[,`:=`(tot=sum(N)),by=.(Journal,Year)]
 gender_dt[,`:=`(Share_Women=N/tot)]
-
-gender_dt <- merge(d,gender_dt,all=T)
-gender_dt[is.na(gender_dt), ] <- 0 
 
 gg_gender <- ggplot(gender_dt[Gender=="female"],aes(x=Year,y=Share_Women,color=Journal,linetype=Journal,shape=Journal))+
   geom_line(linewidth=1)+
   geom_point(size=3)+
   coord_cartesian(ylim=c(0,1),xlim=c(2020,2023))+
-  labs(title="Proportion of Women Editors at Top-5 Economics Journals",x="",y="")+
+  labs(title="Proportion of Women Editors at Top-5 Economics Journals",x="",y="",caption="Created by @DavidUbilava")+
   theme_guess()+
-  theme(legend.position = "top",legend.text = element_text(size=28),axis.text=element_text(size=32))
+  theme(legend.position = "top")
+
+gg_gender <- ggdraw(gg_gender) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
+
+gg_gender
 
 ggsave("figures/prop_women.png",gg_gender,width=6.5,height=3.75)
 
-# dt <- data.table(name=c("Arnold","Bob","Corey","David","Ethan","Fergus"),uni=c("MIT","Harvard","Harvard","Yale","MIT","Harvard"),longitude=c(-71.092003,-71.116943,-71.116943,-72.922585,-71.092003,-71.116943),latitude=c(42.360001,42.374443,42.374443,41.316307,42.360001,42.374443),journal=c("AER","AER","AER","AER","QJE","QJE"))
 
-# dt <- data.table(name=c("Arnold","Bob","Corey","David","Ethan","Fergus","Garry"),uni=c("MIT","Harvard","Harvard","Yale","MIT","Harvard","Harvard"),longitude=c(-71.092003,-71.116943,-71.116943,-72.922585,-71.092003,-71.116943,-71.116943),latitude=c(42.360001,42.374443,42.374443,41.316307,42.360001,42.374443,42.374443),journal=c("AER","AER","AER","AER","QJE","QJE","QJE"))
 
-dt[,`:=`(Longitude=round(Longitude,3),Latitude=round(Latitude,3))]
+# centroids (2023) ----
 
-# yearsum_dt <- dt[,.(.N),by=.(Year,Affiliation,Longitude,Latitude)]
-# yearsum_dt <- yearsum_dt[order(Year,-N,Affiliation)]
-# 
-# yearsum_dt[,`:=`(Total=sum(N)),by=Year]
-# yearsum_dt[,`:=`(S=N/Total)]
-# yearsum_dt[,`:=`(HHI=sum(S^2)),by=Year]
+dt_list <- list()
+ct_list <- list()
 
-jlist <- unique(dt$Journal)
-ylist <- unique(dt$Year)
+for(i in 1:length(jlist)){
+  
+  sub_dt <- dt[Journal==jlist[i] & Year==2023]
+  
+  # convert the data.table object to a sf object
+  dt_sf <- st_as_sf(sub_dt,coords=c("Longitude","Latitude"))
+  
+  # save coordinates as a multipoint object -- so that weighting works
+  pt_sf <- st_multipoint(as.matrix(sub_dt[,.(Longitude,Latitude)]))
+  
+  # get the centroid of the multipoint object
+  ct_sf <- st_centroid(pt_sf)
+  
+  # save the centroid as a data.table object than as a sf object
+  ct_dt <- data.table(st_coordinates(ct_sf))
+  colnames(ct_dt) <- c("longitude","latitude")
+  
+  ct_sf <- st_as_sf(ct_dt,coords=c("longitude","latitude"))
+  
+  # add a crs to the objects
+  crs <- st_crs("+proj=longlat +datum=WGS84")
+  
+  dt_sf_crs <- st_set_crs(dt_sf,crs)
+  ct_sf_crs <- st_set_crs(ct_sf,crs)
+  
+  world_crs <- st_set_crs(world,crs)
+  
+  dt_locations <- data.table(st_coordinates(dt_sf_crs))
+  dt_locations <- dt_locations[,.(.N),by=.(X,Y)]
+  
+  ct_location <- data.table(st_coordinates(ct_sf_crs),Journal=jlist[i])
+  
+  dt_list[[i]] <- dt_locations
+  ct_list[[i]] <- ct_location
+}
+
+
+dt_array <- Reduce(rbind,dt_list)
+dt_array <- dt_array[,.(N=sum(N)),by=.(X,Y)]
+
+ct_array <- Reduce(rbind,ct_list)
+
+
+gg_map <- ggplot(world_crs)+
+  geom_sf(fill=NA,color="slategray",linewidth=.2)+
+  geom_point(data=dt_array,aes(x=X,y=Y,size=factor(N)),shape=21,color="indianred",fill="indianred",alpha=.6)+
+  geom_point(data=ct_array,aes(x=X,y=Y),shape=21,size=2,color="black",fill="goldenrod")+
+  geom_text_repel(data=ct_array,aes(x=X,y=Y,label=Journal),family="sans",color="slategray",nudge_x=c(0,0,.5,-.5,0),nudge_y=c(-.5,.75,0,0,-.5),seed=1)+
+  labs(title="Top-5 Economics Journal Editor Locations and Journal Centroids",x="",y="",caption="Created by @DavidUbilava")+
+  coord_sf(xlim=c(-130,25),ylim=c(18,65),expand=FALSE)+
+  theme_guess()+
+  theme(legend.position="top")
+
+gg_map <- ggdraw(gg_map) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
+
+ggsave("figures/geolocations.png",gg_map,width=6.5,height=3.75)
+
+
+uni_dt <- dt[Year==2023,.(.N),by=Affiliation]
+uni_dt <- uni_dt[order(-N)]
+uni_dt
+
+women_dt <- dt[Year==2023,.(.N),by=Gender]
+
+country_dt <- dt[Year==2023,.(.N),by=Country]
+country_dt <- country_dt[order(-N)]
+country_dt
+
+# obtain distance (degrees)
+distance_d <- st_distance(dt_sf,ct_sf)
+
+# obtain distance (metres)
+dt_transformed <- st_transform(dt_sf_crs,"+proj=longlat +datum=WGS84 +units=m")
+ct_transformed <- st_transform(ct_sf_crs,"+proj=longlat +datum=WGS84 +units=m")
+
+distance_m <- st_distance(dt_transformed,ct_transformed)
+
+#standard distance
+sdist_d <- mean(as.numeric(distance_d))
+sdist_m <- mean(as.numeric(distance_m))
+                
+                
 
 mat <- matrix(nrow=length(jlist),ncol=length(ylist))
 
@@ -219,7 +296,7 @@ sdist_m <- mean(as.numeric(distance_m))
 
 gg_schools <- ggplot(almamater_dt[N>=4],aes(x=PhD,y=N))+
   geom_bar(stat="identity",fill="coral")+
-  geom_text(aes(y=location,label=PhD_label,color=labelcol,family="Syne Mono"),size=10,hjust=0,vjust=0.5,angle=90)+
+  geom_text(aes(y=location,label=PhD_label,color=labelcol,family="mono"),size=10,hjust=0,vjust=0.5,angle=90)+
   scale_color_manual(values=c("coral","white"))+
   labs(title="Top 10 PhD granting universities for the Nobel Prize laureates in Economics",x="",y="",caption = "Created by @DavidUbilava\nData from Wikipedia and other online sources")+
   theme_guess()+
