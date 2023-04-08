@@ -6,20 +6,7 @@ library(ggrepel)
 library(Cairo)
 library(cowplot)
 library(magick)
-library(sf)
-# library(showtext)
-# font_add_google(name="Syne Mono")
-# showtext_auto()
-# devtools::install_github("ropensci/rnaturalearth")
-# devtools::install_github("ropensci/rnaturalearthdata")
-# devtools::install_github("ropensci/rnaturalearthhires")
-library("rnaturalearth")
-library("rnaturalearthdata")
-library(gender)
 
-world <- ne_countries(scale="medium",returnclass="sf")
-lakes <- ne_download(scale="medium",type="lakes",category="physical")
-lakes <- st_as_sf(lakes)
 
 # plot aesthetics
 theme_guess <- function(
@@ -65,22 +52,14 @@ theme_guess <- function(
 # load the logo (for branding)
 logo <- image_read("logo.png")
 
-# # load data
-# dt <- fread("data/editors.csv")
-# 
-# unique_dt <- unique(dt[,.(FirstName)])
-# 
-# gender_dt <- data.table(gender(unique_dt$FirstName,method = "genderize"))
-# 
-# dt <- merge(dt,gender_dt[,.(FirstName=name,Gender=gender)],by="FirstName",all.x=T)
-# 
-# save(dt,file="data/editors.RData")
+# read data
+dt <- fread("data/CMO-Historical-Data-Monthly.csv")
 
-load("data/editors.RData")
+dt[,`:=`(Date=as.Date(paste0(substr(Date,1,4),"-",substr(Date,6,7),"-01")))]
 
-dt[,`:=`(Longitude=round(Longitude,3),Latitude=round(Latitude,3))]
-
-
+ggplot(dt[Date>="1996-01-01"],aes(x=Date,y=SUGAR_WLD))+
+  geom_line()+
+  geom_vline(xintercept=c(as.Date("1997-12-01"),as.Date("2009-12-01"),as.Date("2015-12-01")))
 
 # centroids (2023) ----
 
