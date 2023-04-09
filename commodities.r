@@ -6,6 +6,8 @@ library(ggrepel)
 library(Cairo)
 library(cowplot)
 library(magick)
+library(stringr)
+library(vars)
 
 
 # plot aesthetics
@@ -53,13 +55,55 @@ theme_guess <- function(
 logo <- image_read("logo.png")
 
 # read data
-dt <- fread("data/CMO-Historical-Data-Monthly.csv")
 
-dt[,`:=`(Date=as.Date(paste0(substr(Date,1,4),"-",substr(Date,6,7),"-01")))]
+## commodities
+prices_dt <- fread("data/CMO-Historical-Data-Monthly.csv")
 
-ggplot(dt[Date>="1996-01-01"],aes(x=Date,y=SUGAR_WLD))+
-  geom_line()+
-  geom_vline(xintercept=c(as.Date("1997-12-01"),as.Date("2009-12-01"),as.Date("2015-12-01")))
+## enso
+enso_dt <- fread("https://www.cpc.ncep.noaa.gov/data/indices/ersst5.nino.mth.91-20.ascii")
+
+colnames(enso_dt)[c(4,6,8,10)] <- c("ANOM1+2","ANOM3","ANOM4","ANOM3.4")
+
+# adjust dates
+prices_dt[,`:=`(Date=as.Date(paste0(substr(Date,1,4),"-",substr(Date,6,7),"-01")))]
+
+enso_dt[,`:=`(Date=as.Date(paste0(YR,"-",str_pad(MON,2,pad="0"),"-01")))]
+
+dt <- merge(enso_dt[,.(Date,ENSO=ANOM3.4)],prices_dt,all.y=T)
+
+# j=j+1
+# a <- c(1,2,j)
+# sub_dt <- dt[,..a]
+# lab <- colnames(sub_dt)[3]
+# colnames(sub_dt) <- c("Date","ENSO","Price")
+# # sub_lg <- melt(sub_dt,id.vars="Date",variable.name="Series",value.name="Values")
+# 
+# ggplot(sub_dt[Date>="1980-01-01"],aes(x=Date)) +
+#   geom_line(aes(y = ENSO),colour="coral") +
+#   geom_line(aes(y = Price / mean(sub_dt$Price,na.rm=T)), colour="steelblue") +
+#   labs(title=lab)+
+#   scale_y_continuous(sec.axis = ~.*mean(sub_dt$Price,na.rm=T))+
+#   theme(axis.text.y.left = element_text(color = "coral"),
+#         axis.text.y.right = element_text(color = "steelblue"))
+
+
+# ENSO years
+years <- c(1982,1987,1992,1997,2009,2015)
+
+
+events <- paste0(years,"-12-01")
+
+prices_ls <- list()
+
+for(i in 1:length(events)){
+  prices_ls[[i]] <- dt[Date>=paste0(years[i],"-01-01") & Date<=paste0(years[i]+2,"-12-01"),.(Year=years[i],Period=-11:24,PALM_OIL,COCONUT_OIL,SOYBEAN_OIL,FISH_MEAL)]
+}
+
+combined_dt <- Reduce(rbind,prices_ls)
+
+ggplot(combined_dt,aes(x=Period,y=PALM_OIL,group=Year))+
+  geom_line(color=ifelse(combined_dt$Year%in%c(1982,1997,2015),"indianred","darkgray"))+
+  geom_text_repel(data=combined_dt[Period==12],aes(label=Year),color=ifelse(combined_dt[Period==24]$Year%in%c(1982,1997,2015),"indianred","darkgray"))
 
 # centroids (2023) ----
 
