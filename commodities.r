@@ -7,8 +7,18 @@ library(Cairo)
 library(cowplot)
 library(magick)
 library(stringr)
-library(vars)
+library(fredr)
 
+
+# fredr_set_key("7a1db535f59c2ac4382b9c22a15b5f06")
+
+# check
+
+fredr(
+  series_id = "UNRATE",
+  observation_start = as.Date("1990-01-01"),
+  observation_end = as.Date("2000-01-01")
+)
 
 # plot aesthetics
 theme_guess <- function(
