@@ -66,6 +66,28 @@ logo <- image_read("logo.png")
 
 # read data
 
+## enso plume
+
+plume_dt <- fread("data/plume.csv")
+
+plume_lg <- melt(plume_dt,id.vars=c("Model","Type"),variable.name="Season",value.name="Forecast")
+plume_lg <- plume_lg[order(Type,Model,Season)]
+plume_lg$Season <- factor(plume_lg$Season,levels=colnames(plume_dt)[1:9])
+
+plume_lg[,`:=`(Forecast=Forecast/100)]
+
+gg_plume <- ggplot(plume_lg[Model!="CPC CONSOL"],aes(x=Season,y=Forecast,group=Model))+
+  geom_line(color="darkgray",linewidth=.8,na.rm=T)+
+  geom_line(data=plume_lg[Model=="CPC CONSOL"],color="black",linewidth=.8,linetype=5)+
+  # coord_cartesian(ylim=c(-2,2))+
+  labs(title="ENSO Forecast Plume",x="Season",y="\u00B0C",caption="Created by @DavidUbilava using data from International Research Institute for Climate and Society (https://iri.columbia.edu/)")+
+  theme_guess()
+
+gg_plume <- ggdraw(gg_plume) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
+
+ggsave("figures/enso_plume.png",gg_plume,width=6.5,height=3.75)
+
 ## commodities
 prices_dt <- fread("data/CMO-Historical-Data-Monthly.csv")
 
@@ -106,7 +128,7 @@ events <- paste0(years,"-12-01")
 prices_ls <- list()
 
 for(i in 1:length(events)){
-  prices_ls[[i]] <- dt[Date>=paste0(years[i],"-01-01") & Date<=paste0(years[i]+2,"-12-01"),.(Year=years[i],Period=-11:24,PALM_OIL,COCONUT_OIL,SOYBEAN_OIL,FISH_MEAL)]
+  prices_ls[[i]] <- dt[Date>=paste0(years[i],"-01-01") & Date<=paste0(years[i]+2,"-12-01"),.(Year=years[i],Period=-11:24,PALM_OIL,COCONUT_OIL,SOYBEAN_OIL,SUGAR_WLD)]
 }
 
 combined_dt <- Reduce(rbind,prices_ls)
