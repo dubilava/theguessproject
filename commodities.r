@@ -9,7 +9,7 @@ library(magick)
 library(stringr)
 library(fredr)
 
-
+"%!in%" <- Negate("%in%")
 # fredr_set_key("7a1db535f59c2ac4382b9c22a15b5f06")
 
 # check
@@ -75,18 +75,35 @@ plume_lg <- plume_lg[order(Type,Model,Season)]
 plume_lg$Season <- factor(plume_lg$Season,levels=colnames(plume_dt)[1:9])
 
 plume_lg[,`:=`(Forecast=Forecast/100)]
+plume_ave <- data.table(Model="Average",Type="A",plume_lg[Model!="CPC CONSOL",.(Forecast=mean(Forecast,na.rm=T)),by=Season])
 
-gg_plume <- ggplot(plume_lg[Model!="CPC CONSOL"],aes(x=Season,y=Forecast,group=Model))+
+plume_lg <- rbind(plume_lg,plume_ave)
+
+gg_plume <- ggplot(plume_lg[Model%!in%c("CPC CONSOL","Average")],aes(x=Season,y=Forecast,group=Model))+
   geom_line(color="darkgray",linewidth=.8,na.rm=T)+
   geom_line(data=plume_lg[Model=="CPC CONSOL"],color="black",linewidth=.8,linetype=5)+
+  geom_line(data=plume_lg[Model=="Average"],color="coral",linewidth=.8,linetype=1)+
   # coord_cartesian(ylim=c(-2,2))+
-  labs(title="ENSO Forecast Plume",x="Season",y="\u00B0C",caption="Created by @DavidUbilava using data from International Research Institute for Climate and Society (https://iri.columbia.edu/)")+
+  labs(title="ENSO Forecasts",x="Season",y="\u00B0C",caption="Created by @DavidUbilava using data from International Research Institute for Climate and Society (https://iri.columbia.edu/)")+
   theme_guess()
 
 gg_plume <- ggdraw(gg_plume) +
   draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
 
 ggsave("figures/enso_plume.png",gg_plume,width=6.5,height=3.75)
+
+
+
+## enso
+enso_dt <- fread("https://www.cpc.ncep.noaa.gov/data/indices/ersst5.nino.mth.91-20.ascii")
+
+colnames(enso_dt)[c(4,6,8,10)] <- c("ANOM1+2","ANOM3","ANOM4","ANOM3.4")
+
+enso_dt[,`:=`(Date=as.Date(paste0(YR,"-",str_pad(MON,2,pad="0"),"-01")))]
+
+ggplot(enso_dt[Date>="1980-01-01"],aes(x=Date,y=ANOM3.4))+
+  geom_line()+
+  theme_guess()
 
 ## commodities
 prices_dt <- fread("data/CMO-Historical-Data-Monthly.csv")
