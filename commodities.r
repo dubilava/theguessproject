@@ -59,132 +59,18 @@ theme_guess <- function(base_size=10,base_family="sans",title_family="sans",bord
 # load the logo (for branding)
 logo <- image_read("logo.png")
 
-# read data
-
-# enso observations ----
-enso_dt <- fread("https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/detrend.nino34.ascii.txt")
-
-enso_dt[,`:=`(Date=as.Date(paste0(YR,"-",str_pad(MON,2,pad="0"),"-01")))]
-
-gg_enso <- ggplot(enso_dt[Date>="1980-01-01"],aes(x=Date,y=ANOM,color=ANOM))+
-  geom_line(linewidth=.8)+
-  scale_color_gradient2(low="steelblue",mid="gray",high="coral")+
-  labs(title="Sea Surface Temperature Anomaly in the Nino3.4 Region",x="Year",y="\u00B0C",caption="Created by @DavidUbilava | Data: NOAA Climate Prediction Center (https://www.cpc.ncep.noaa.gov/data/indices/)")+
-  theme_guess()
-
-gg_enso <- ggdraw(gg_enso) +
-  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
-
-ggsave("figures/enso_ts.png",gg_enso,width=6.5,height=3.75)
-
-
-# enso forecasts ----
-
-## generate ONI index
-
-enso_dt[,`:=`(ONI=round(frollmean(ANOM,n=3,algo="exact",align="center"),2))]
-
-month_to_season <- data.table(MON=1:12,Season=c("DJF","JFM","FMA","MAM","AMJ","MJJ","JJA","JAS","ASO","SON","OND","NDJ"))
-
-enso_dt <- merge(enso_dt,month_to_season,by="MON",all.x=T)
-enso_dt <- enso_dt[order(Date)]
-
-sub_dt <- enso_dt[YR%in%c(2009,2015) & MON %in% c(4:12),.(Model="Actual",Type="A",Year=YR,Season,Forecast=ONI)]
-
-## load plumes
-plume_dt <- fread("data/plume.csv")
-plume_dt <- plume_dt[Model!="CPC CONSOL"]
-
-plume_lg <- melt(plume_dt,id.vars=c("Model","Type","Year"),variable.name="Season",value.name="Forecast")
-
-plume_lg <- plume_lg[order(Year,Type,Model,Season)]
-plume_lg$Season <- factor(plume_lg$Season,levels=colnames(plume_dt)[1:9])
-
-plume_lg[,`:=`(Forecast=Forecast/100)]
-plume_ave <- data.table(Model="Average",Type="A",plume_lg[Model!="CPC CONSOL",.(Forecast=mean(Forecast,na.rm=T)),by=.(Year,Season)])
-
-plume_lg <- rbind(plume_lg,plume_ave)
-
-plume_lg <- rbind(plume_lg,sub_dt)
-
-gg_plume <- ggplot(plume_lg[Type!="A" & Year==2023],aes(x=Season,y=Forecast,group=Model))+
-  geom_line(color="darkgray",linewidth=.8,na.rm=T)+
-  geom_line(data=plume_lg[Model=="Average" & Year==2023],color="black",linewidth=.8,linetype=5)+
-  # geom_line(data=plume_lg[Model=="Average"],color="coral",linewidth=.8,linetype=1)+
-  # coord_cartesian(ylim=c(-2,2))+
-<<<<<<< HEAD
-  labs(title="ENSO Forecasts",x="Season",y="\u00B0C",caption="Created by @DavidUbilava | Data: International Research Institute for Climate and Society (https://iri.columbia.edu/)")+
-=======
-  labs(title="2023 ENSO Forecasts",x="Season",y="\u00B0C",caption="Created by @DavidUbilava | Data: International Research Institute for Climate and Society (https://iri.columbia.edu/)")+
->>>>>>> d4418d94e9172f1d71a7a1c83782c140582ddeb2
-  theme_guess()
-
-gg_plume <- ggdraw(gg_plume) +
-  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
-
-ggsave("figures/enso_plume.png",gg_plume,width=6.5,height=3.75)
-
-
-<<<<<<< HEAD
-
-## enso
-enso_dt <- fread("https://www.cpc.ncep.noaa.gov/data/indices/ersst5.nino.mth.91-20.ascii")
-
-colnames(enso_dt)[c(4,6,8,10)] <- c("ANOM1+2","ANOM3","ANOM4","ANOM3.4")
-
-enso_dt[,`:=`(Date=as.Date(paste0(YR,"-",str_pad(MON,2,pad="0"),"-01")))]
-
-gg_enso <- ggplot(enso_dt[Date>="1980-01-01"],aes(x=Date,y=ANOM3.4))+
-  geom_line(color="coral",linewidth=.8)+
-  labs(title="Sea Surface Temperature Anomaly in the Nino3.4 Region",x="Year",y="\u00B0C",caption="Created by @DavidUbilava | Data: Climate Prediction Center of NOAA (https://www.cpc.ncep.noaa.gov/)")+
-=======
-gg_plume15 <- ggplot(plume_lg[Type!="A" & Year==2015],aes(x=Season,y=Forecast,group=Model))+
-  geom_line(color="darkgray",linewidth=.8,na.rm=T)+
-  geom_line(data=plume_lg[Model=="Average" & Year==2015],color="black",linewidth=.8,linetype=5)+
-  geom_line(data=plume_lg[Model=="Actual" & Year==2015],color="coral",linewidth=.8,linetype=1)+
-  # coord_cartesian(ylim=c(-2,2))+
-  labs(title="2015 ENSO Forecasts",x="Season",y="\u00B0C",caption="Created by @DavidUbilava | Data: International Research Institute for Climate and Society (https://iri.columbia.edu/)")+
->>>>>>> d4418d94e9172f1d71a7a1c83782c140582ddeb2
-  theme_guess()
-
-gg_plume15 <- ggdraw(gg_plume15) +
-  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
-
-ggsave("figures/enso_plume15.png",gg_plume15,width=6.5,height=3.75)
-
-
-
-gg_plume09 <- ggplot(plume_lg[Type!="A" & Year==2009],aes(x=Season,y=Forecast,group=Model))+
-  geom_line(color="darkgray",linewidth=.8,na.rm=T)+
-  geom_line(data=plume_lg[Model=="Average" & Year==2009],color="black",linewidth=.8,linetype=5)+
-  geom_line(data=plume_lg[Model=="Actual" & Year==2009],color="coral",linewidth=.8,linetype=1)+
-  # coord_cartesian(ylim=c(-2,2))+
-  labs(title="2009 ENSO Forecasts",x="Season",y="\u00B0C",caption="Created by @DavidUbilava | Data: International Research Institute for Climate and Society (https://iri.columbia.edu/)")+
-  theme_guess()
-
-gg_plume09 <- ggdraw(gg_plume09) +
-  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
-
-ggsave("figures/enso_plume09.png",gg_plume09,width=6.5,height=3.75)
-
-
-
-
-
 ## commodities
 prices_dt <- fread("data/CMO-Historical-Data-Monthly.csv")
 
 ## enso
-enso_dt <- fread("https://www.cpc.ncep.noaa.gov/data/indices/ersst5.nino.mth.91-20.ascii")
+enso_dt <- fread("https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/detrend.nino34.ascii.txt")
 
-colnames(enso_dt)[c(4,6,8,10)] <- c("ANOM1+2","ANOM3","ANOM4","ANOM3.4")
+enso_dt[,`:=`(Date=as.Date(paste0(YR,"-",str_pad(MON,2,pad="0"),"-01")))]
 
 # adjust dates
 prices_dt[,`:=`(Date=as.Date(paste0(substr(Date,1,4),"-",substr(Date,6,7),"-01")))]
 
-enso_dt[,`:=`(Date=as.Date(paste0(YR,"-",str_pad(MON,2,pad="0"),"-01")))]
-
-dt <- merge(enso_dt[,.(Date,ENSO=ANOM3.4)],prices_dt,all.y=T)
+dt <- merge(enso_dt[,.(Date,ENSO=ANOM)],prices_dt,all.y=T)
 
 # j=j+1
 # a <- c(1,2,j)
@@ -202,8 +88,38 @@ dt <- merge(enso_dt[,.(Date,ENSO=ANOM3.4)],prices_dt,all.y=T)
 #         axis.text.y.right = element_text(color = "steelblue"))
 
 
-# ENSO years
-years <- c(1982,1987,1992,1997,2009,2015)
+y2009_dt <- dt[Date>="2009-01-01" & Date<="2010-12-01"]
+
+nm <- function(x,i=1){
+  x <- (x-x[i])/x[i]
+  return(x)
+}
+  
+  
+y2009_dt[,13:ncol(y2009_dt):= lapply(.SD,nm),.SDcols=13:ncol(y2009_dt)]
+
+y2009_dt <- y2009_dt[,1:56]
+
+y2009_lg <- melt(y2009_dt,id.vars="Date",variable.name="Indices",value.name="Values")
+
+y2009_lg[,`:=`(Legend=ifelse(Indices=="ENSO","ENSO","Price"))]
+
+gg_commodities <- ggplot(y2009_lg,aes(x=Date,y=Values,group=Indices))+
+  geom_line(data=y2009_lg[Indices!="ENSO"],aes(color=Legend,linetype=Legend),na.rm=T,linewidth=.8)+
+  geom_line(data=y2009_lg[Indices=="ENSO"],aes(color=Legend,linetype=Legend),na.rm=T,linewidth=.8)+
+  scale_color_manual(values = c("darkgray","coral"),guide=guide_legend(reverse=T))+
+  scale_linetype_manual(values = c(5,1),guide=guide_legend(reverse=T))+
+  coord_cartesian(ylim=c(-1,2.5))+
+  labs(title="2017 ENSO Forecasts",x="Season",y="\u00B0C",caption="Created by @DavidUbilava | Data: International Research Institute for Climate and Society (https://iri.columbia.edu/)")+
+  theme_guess()+
+  theme(legend.position = "top")
+
+gg_plume17 <- ggdraw(gg_plume17) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
+
+ggsave("figures/enso_plume17.png",gg_plume17,width=6.5,height=3.75)
+
+
 
 
 events <- paste0(years,"-12-01")
