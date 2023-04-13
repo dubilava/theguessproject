@@ -84,7 +84,7 @@ gg_plume <- ggplot(plume_lg[Model%!in%c("CPC CONSOL","Average")],aes(x=Season,y=
   geom_line(data=plume_lg[Model=="CPC CONSOL"],color="black",linewidth=.8,linetype=5)+
   geom_line(data=plume_lg[Model=="Average"],color="coral",linewidth=.8,linetype=1)+
   # coord_cartesian(ylim=c(-2,2))+
-  labs(title="ENSO Forecasts",x="Season",y="\u00B0C",caption="Created by @DavidUbilava using data from International Research Institute for Climate and Society (https://iri.columbia.edu/)")+
+  labs(title="ENSO Forecasts",x="Season",y="\u00B0C",caption="Created by @DavidUbilava | Data: International Research Institute for Climate and Society (https://iri.columbia.edu/)")+
   theme_guess()
 
 gg_plume <- ggdraw(gg_plume) +
@@ -103,13 +103,15 @@ enso_dt[,`:=`(Date=as.Date(paste0(YR,"-",str_pad(MON,2,pad="0"),"-01")))]
 
 gg_enso <- ggplot(enso_dt[Date>="1980-01-01"],aes(x=Date,y=ANOM3.4))+
   geom_line(color="coral",linewidth=.8)+
-  labs(title="Sea Surface Temperature Anomaly in the Nino3.4 Region",x="Year",y="\u00B0C",caption="Created by @DavidUbilava using data from Climate Prediction Center of NOAA (https://www.cpc.ncep.noaa.gov/)")+
+  labs(title="Sea Surface Temperature Anomaly in the Nino3.4 Region",x="Year",y="\u00B0C",caption="Created by @DavidUbilava | Data: Climate Prediction Center of NOAA (https://www.cpc.ncep.noaa.gov/)")+
   theme_guess()
 
 gg_enso <- ggdraw(gg_enso) +
   draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
 
 ggsave("figures/enso_ts.png",gg_enso,width=6.5,height=3.75)
+
+
 
 ## commodities
 prices_dt <- fread("data/CMO-Historical-Data-Monthly.csv")
