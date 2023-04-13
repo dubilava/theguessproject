@@ -21,12 +21,7 @@ fredr(
 )
 
 # plot aesthetics
-theme_guess <- function(
-    base_size=10,
-    base_family = "sans",
-    title_family = "sans",
-    border=FALSE
-){
+theme_guess <- function(base_size=10,base_family="sans",title_family="sans",border=F){
   theme_foundation(base_size=base_size,base_family=base_family) +
     theme(
       line = element_line(linetype=1,colour="black"),
@@ -66,25 +61,58 @@ logo <- image_read("logo.png")
 
 # read data
 
-## enso plume
+# enso observations ----
+enso_dt <- fread("https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/detrend.nino34.ascii.txt")
 
+enso_dt[,`:=`(Date=as.Date(paste0(YR,"-",str_pad(MON,2,pad="0"),"-01")))]
+
+gg_enso <- ggplot(enso_dt[Date>="1980-01-01"],aes(x=Date,y=ANOM,color=ANOM))+
+  geom_line(linewidth=.8)+
+  scale_color_gradient2(low="steelblue",mid="gray",high="coral")+
+  labs(title="Sea Surface Temperature Anomaly in the Nino3.4 Region",x="Year",y="\u00B0C",caption="Created by @DavidUbilava | Data: NOAA Climate Prediction Center (https://www.cpc.ncep.noaa.gov/data/indices/)")+
+  theme_guess()
+
+gg_enso <- ggdraw(gg_enso) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
+
+ggsave("figures/enso_ts.png",gg_enso,width=6.5,height=3.75)
+
+
+# enso forecasts ----
+
+## generate ONI index
+
+enso_dt[,`:=`(ONI=round(frollmean(ANOM,n=3,algo="exact",align="center"),2))]
+
+month_to_season <- data.table(MON=1:12,Season=c("DJF","JFM","FMA","MAM","AMJ","MJJ","JJA","JAS","ASO","SON","OND","NDJ"))
+
+enso_dt <- merge(enso_dt,month_to_season,by="MON",all.x=T)
+enso_dt <- enso_dt[order(Date)]
+
+sub_dt <- enso_dt[YR%in%c(2009,2015) & MON %in% c(4:12),.(Model="Actual",Type="A",Year=YR,Season,Forecast=ONI)]
+
+## load plumes
 plume_dt <- fread("data/plume.csv")
+plume_dt <- plume_dt[Model!="CPC CONSOL"]
 
-plume_lg <- melt(plume_dt,id.vars=c("Model","Type"),variable.name="Season",value.name="Forecast")
-plume_lg <- plume_lg[order(Type,Model,Season)]
+plume_lg <- melt(plume_dt,id.vars=c("Model","Type","Year"),variable.name="Season",value.name="Forecast")
+
+plume_lg <- plume_lg[order(Year,Type,Model,Season)]
 plume_lg$Season <- factor(plume_lg$Season,levels=colnames(plume_dt)[1:9])
 
 plume_lg[,`:=`(Forecast=Forecast/100)]
-plume_ave <- data.table(Model="Average",Type="A",plume_lg[Model!="CPC CONSOL",.(Forecast=mean(Forecast,na.rm=T)),by=Season])
+plume_ave <- data.table(Model="Average",Type="A",plume_lg[Model!="CPC CONSOL",.(Forecast=mean(Forecast,na.rm=T)),by=.(Year,Season)])
 
 plume_lg <- rbind(plume_lg,plume_ave)
 
-gg_plume <- ggplot(plume_lg[Model%!in%c("CPC CONSOL","Average")],aes(x=Season,y=Forecast,group=Model))+
+plume_lg <- rbind(plume_lg,sub_dt)
+
+gg_plume <- ggplot(plume_lg[Type!="A" & Year==2023],aes(x=Season,y=Forecast,group=Model))+
   geom_line(color="darkgray",linewidth=.8,na.rm=T)+
-  geom_line(data=plume_lg[Model=="CPC CONSOL"],color="black",linewidth=.8,linetype=5)+
-  geom_line(data=plume_lg[Model=="Average"],color="coral",linewidth=.8,linetype=1)+
+  geom_line(data=plume_lg[Model=="Average" & Year==2023],color="black",linewidth=.8,linetype=5)+
+  # geom_line(data=plume_lg[Model=="Average"],color="coral",linewidth=.8,linetype=1)+
   # coord_cartesian(ylim=c(-2,2))+
-  labs(title="ENSO Forecasts",x="Season",y="\u00B0C",caption="Created by @DavidUbilava using data from International Research Institute for Climate and Society (https://iri.columbia.edu/)")+
+  labs(title="2023 ENSO Forecasts",x="Season",y="\u00B0C",caption="Created by @DavidUbilava | Data: International Research Institute for Climate and Society (https://iri.columbia.edu/)")+
   theme_guess()
 
 gg_plume <- ggdraw(gg_plume) +
@@ -93,23 +121,35 @@ gg_plume <- ggdraw(gg_plume) +
 ggsave("figures/enso_plume.png",gg_plume,width=6.5,height=3.75)
 
 
-
-## enso
-enso_dt <- fread("https://www.cpc.ncep.noaa.gov/data/indices/ersst5.nino.mth.91-20.ascii")
-
-colnames(enso_dt)[c(4,6,8,10)] <- c("ANOM1+2","ANOM3","ANOM4","ANOM3.4")
-
-enso_dt[,`:=`(Date=as.Date(paste0(YR,"-",str_pad(MON,2,pad="0"),"-01")))]
-
-gg_enso <- ggplot(enso_dt[Date>="1980-01-01"],aes(x=Date,y=ANOM3.4))+
-  geom_line(color="coral",linewidth=.8)+
-  labs(title="Sea Surface Temperature Anomaly in the Nino3.4 Region",x="Year",y="\u00B0C",caption="Created by @DavidUbilava using data from Climate Prediction Center of NOAA (https://www.cpc.ncep.noaa.gov/)")+
+gg_plume15 <- ggplot(plume_lg[Type!="A" & Year==2015],aes(x=Season,y=Forecast,group=Model))+
+  geom_line(color="darkgray",linewidth=.8,na.rm=T)+
+  geom_line(data=plume_lg[Model=="Average" & Year==2015],color="black",linewidth=.8,linetype=5)+
+  geom_line(data=plume_lg[Model=="Actual" & Year==2015],color="coral",linewidth=.8,linetype=1)+
+  # coord_cartesian(ylim=c(-2,2))+
+  labs(title="2015 ENSO Forecasts",x="Season",y="\u00B0C",caption="Created by @DavidUbilava | Data: International Research Institute for Climate and Society (https://iri.columbia.edu/)")+
   theme_guess()
 
-gg_enso <- ggdraw(gg_enso) +
+gg_plume15 <- ggdraw(gg_plume15) +
   draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
 
-ggsave("figures/enso_ts.png",gg_enso,width=6.5,height=3.75)
+ggsave("figures/enso_plume15.png",gg_plume15,width=6.5,height=3.75)
+
+
+
+gg_plume09 <- ggplot(plume_lg[Type!="A" & Year==2009],aes(x=Season,y=Forecast,group=Model))+
+  geom_line(color="darkgray",linewidth=.8,na.rm=T)+
+  geom_line(data=plume_lg[Model=="Average" & Year==2009],color="black",linewidth=.8,linetype=5)+
+  geom_line(data=plume_lg[Model=="Actual" & Year==2009],color="coral",linewidth=.8,linetype=1)+
+  # coord_cartesian(ylim=c(-2,2))+
+  labs(title="2009 ENSO Forecasts",x="Season",y="\u00B0C",caption="Created by @DavidUbilava | Data: International Research Institute for Climate and Society (https://iri.columbia.edu/)")+
+  theme_guess()
+
+gg_plume09 <- ggdraw(gg_plume09) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
+
+ggsave("figures/enso_plume09.png",gg_plume09,width=6.5,height=3.75)
+
+
 
 ## commodities
 prices_dt <- fread("data/CMO-Historical-Data-Monthly.csv")
