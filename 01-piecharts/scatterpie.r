@@ -85,4 +85,4 @@ gg_map <- ggdraw(gg_map) +
 
 # save the graph
 ggsave("conflict_africa.png",gg_map,width=6.5,height=7.15,dpi="retina",device="png")
-ggsave("conflict_africa.eps",gg_map,width=6.5,height=7.15,dpi="retina",device="eps")
+ggsave("conflict_africa.eps",gg_map,width=6.5,height=7.15,dpi="retina",device=cairo_ps)
