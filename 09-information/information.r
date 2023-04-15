@@ -1,27 +1,47 @@
 # load the libraries (install them if needed)
 library(data.table)
 library(ggplot2)
+library(ggthemes)
+library(cowplot)
+library(magick)
 
 # plot aesthetics
-theme_guess <- function(){
-  theme(
-    panel.background=element_rect(fill="transparent",color=NA),
-    plot.background=element_rect(fill="transparent",color=NA),
-    legend.background=element_rect(fill="transparent",color=NA),
-    plot.title=element_text(size=12,colour="dimgray"),
-    axis.title=element_text(size=12,colour="dimgray"),
-    axis.text=element_text(size=10,colour="dimgray",margin=margin(t=1,r=1,b=1,l=1)),
-    axis.line=element_line(colour="darkgray"),
-    axis.ticks=element_line(colour="darkgray"),
-    legend.position="none",
-    legend.title=element_blank(),
-    legend.text=element_text(size=10,colour="dimgray"),
-    legend.key.size=unit(.75,'lines'),
-    plot.caption = element_text(colour="slategray"),
-    strip.background=element_blank(),
-    strip.text=element_text(size=10,colour="dimgray",face="bold",margin=margin(.1,0,.1,0,"cm"))
-  )
+theme_guess <- function(base_size=10,base_family="sans",title_family="sans",border=F){
+  theme_foundation(base_size=base_size,base_family=base_family) +
+    theme(
+      line = element_line(linetype=1,colour="black"),
+      rect = element_rect(linetype=0,colour=NA),
+      text = element_text(colour="black"),
+      # title = element_text(family=title_family,size=rel(1.1)),
+      # panel.background=element_rect(fill="transparent",color=NA),
+      panel.grid = element_line(colour=NULL,linetype=3),
+      panel.grid.major = element_line(colour="darkgray"),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor = element_blank(),
+      # plot.background=element_rect(fill="transparent",color=NA),
+      plot.title=element_text(colour="black",hjust=0,size=rel(1.1)),
+      plot.caption = element_text(family=base_family,size=rel(0.7),colour="slategray",hjust=0,margin=margin(t=5,r=1,b=1,l=1)),
+      plot.margin=unit(c(0.25,0.25,0.25,1.25),"lines"),
+      # axis.title = element_blank(),
+      axis.text = element_text(family=base_family,size=rel(0.9),margin=margin(t=1,r=1,b=1,l=1)),
+      axis.text.x = element_text(colour = NULL),
+      axis.text.y = element_text(colour = NULL),
+      axis.ticks = element_blank(),
+      axis.line = element_line(),
+      axis.line.y = element_blank(),
+      legend.background=element_rect(fill="transparent",color=NA),
+      legend.position="none",
+      legend.title=element_blank(),
+      legend.text=element_text(family=base_family,size=rel(0.9),colour="slategray"),
+      legend.key = element_rect(fill="transparent"),
+      legend.key.size=unit(.75,'lines'),
+      strip.background=element_blank(),
+      strip.text=element_text(size=rel(.8),colour="slategray",margin=margin(.1,0,.1,0,"cm"))
+    )
 }
+
+# load the logo (for branding)
+logo <- image_read("../logo.png")
 
 # a function that simulates a time series with no structural change
 sim <- function(m,n,sc=FALSE){
@@ -87,21 +107,25 @@ rmsfe2_dt[,`:=`(dif=log(exp/rol))]
 # a 'density' plot of relative RMSFE (no structural change)
 gg_nc <- ggplot(rmsfe1_dt,aes(x=dif))+
   geom_dotplot(binwidth=.00055,dotsize=.6,color="coral",fill="coral",method="histodot")+
-  labs(x="Relative Difference in RMSFE of Expanding vs Rolling Windows",y="",title="Constant Data-Generating Process",caption="Created by @DavidUbilava using simulated data")+
-  theme_classic()+
-  theme_guess()+
-  theme(axis.title.y=element_blank(),axis.text.y = element_blank(),axis.line.y = element_blank())
+  labs(x="Relative Difference in RMSFE of Expanding vs Rolling Windows",y="",title="Constant Data-Generating Process",caption="Created by @DavidUbilava | Data: simulated")+
+  theme_guess()
 
-ggsave("figures/nochange.png",gg_nc,width=6.5,height=4.5,dpi="retina",device="png")
-ggsave("figures/nochange.eps",gg_nc,width=6.5,height=4.5,dpi="retina",device="eps")
+# add logo
+gg_nc <- ggdraw(gg_nc) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
+
+ggsave("nochange.png",gg_nc,width=6.5,height=4.5,dpi="retina",device="png")
+ggsave("nochange.eps",gg_nc,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
 
 # a 'density' plot of relative RMSFE (structural change)
 gg_sc <- ggplot(rmsfe2_dt,aes(x=dif))+
   geom_dotplot(binwidth=.00145,dotsize=.55,color="coral",fill="coral",method="histodot")+
-  labs(x="Relative Difference in RMSFE of Expanding vs Rolling Windows",y="",title="Changing Data-Generating Process",caption="Created by @DavidUbilava using simulated data")+
-  theme_classic()+
-  theme_guess()+
-  theme(axis.title.y=element_blank(),axis.text.y = element_blank(),axis.line.y = element_blank())
+  labs(x="Relative Difference in RMSFE of Expanding vs Rolling Windows",y="",title="Changing Data-Generating Process",caption="Created by @DavidUbilava | Data: simulated")+
+  theme_guess()
 
-ggsave("figures/change.png",gg_sc,width=6.5,height=4.5,dpi="retina",device="png")
-ggsave("figures/change.eps",gg_sc,width=6.5,height=4.5,dpi="retina",device="eps")
+# add logo
+gg_sc <- ggdraw(gg_sc) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
+
+ggsave("change.png",gg_sc,width=6.5,height=4.5,dpi="retina",device="png")
+ggsave("change.eps",gg_sc,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
