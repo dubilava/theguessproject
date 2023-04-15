@@ -102,7 +102,7 @@ gg_expr <- ggplot(prodexp_sub,aes(x=Year,y=Exports,fill=Country,group=Country)) 
   geom_hline(yintercept = seq(min_inc,max_val,min_inc),color="white",linewidth=.3,linetype=3)+
   scale_x_discrete(breaks=seq(2000,2020,5))+
   scale_fill_manual(values=c("darkgray",rep("dimgray",2),rep("darkgray",5),"coral","indianred"))+
-  labs(x="Year",y="Exports (million mt)",caption="Created by @DavidUbilava using data from USDA/FAS PSD Online\nhttps://apps.fas.usda.gov/psdonline/app/index.html")+
+  labs(x="Year",y="Exports (million mt)",caption="Created by @DavidUbilava | Data: USDA/FAS PSD Online (https://apps.fas.usda.gov/psdonline/app/index.html)")+
   coord_cartesian(ylim=c(0,210))+
   theme_guess()+
   theme(legend.position = "right")
