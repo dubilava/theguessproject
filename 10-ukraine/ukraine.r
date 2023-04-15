@@ -1,6 +1,9 @@
 # load the libraries (install them if needed)
 library(data.table)
 library(ggplot2)
+library(ggthemes)
+library(cowplot)
+library(magick)
 library(Cairo)
 library(sf)
 library(scales)
@@ -8,28 +11,45 @@ library(rnaturalearth)
 library(rnaturalearthdata)
 
 # plot aesthetics
-theme_guess <- function(){
-  theme(
-    panel.background=element_rect(fill="transparent",color=NA),
-    plot.background=element_rect(fill="transparent",color=NA),
-    legend.background=element_rect(fill="transparent",color=NA),
-    plot.title=element_text(size=12,colour="dimgray"),
-    axis.title=element_text(size=12,colour="dimgray"),
-    axis.text=element_text(size=10,colour="dimgray",margin=margin(t=1,r=1,b=1,l=1)),
-    axis.line=element_line(colour="darkgray"),
-    axis.ticks=element_line(colour="darkgray"),
-    legend.position="none",
-    legend.title=element_blank(),
-    legend.text=element_text(size=10,colour="dimgray"),
-    legend.key.size=unit(.75,'lines'),
-    plot.caption = element_text(colour="slategray"),
-    strip.background=element_blank(),
-    strip.text=element_text(size=10,colour="dimgray",face="bold",margin=margin(.1,0,.1,0,"cm"))
-  )
+theme_guess <- function(base_size=10,base_family="sans",title_family="sans",border=F){
+  theme_foundation(base_size=base_size,base_family=base_family) +
+    theme(
+      line = element_line(linetype=1,colour="black"),
+      rect = element_rect(linetype=0,colour=NA),
+      text = element_text(colour="black"),
+      # title = element_text(family=title_family,size=rel(1.1)),
+      # panel.background=element_rect(fill="transparent",color=NA),
+      panel.grid = element_line(colour=NULL,linetype=3),
+      panel.grid.major = element_line(colour="darkgray"),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor = element_blank(),
+      # plot.background=element_rect(fill="transparent",color=NA),
+      plot.title=element_text(colour="black",hjust=0,size=rel(1.1)),
+      plot.caption = element_text(family=base_family,size=rel(0.7),colour="slategray",hjust=0,margin=margin(t=5,r=1,b=1,l=1)),
+      plot.margin=unit(c(0.25,0.25,0.25,1.25),"lines"),
+      # axis.title = element_blank(),
+      axis.text = element_text(family=base_family,size=rel(0.9),margin=margin(t=1,r=1,b=1,l=1)),
+      axis.text.x = element_text(colour = NULL),
+      axis.text.y = element_text(colour = NULL),
+      axis.ticks = element_blank(),
+      axis.line = element_line(),
+      axis.line.y = element_blank(),
+      legend.background=element_rect(fill="transparent",color=NA),
+      legend.position="none",
+      legend.title=element_blank(),
+      legend.text=element_text(family=base_family,size=rel(0.9),colour="slategray"),
+      legend.key = element_rect(fill="transparent"),
+      legend.key.size=unit(.75,'lines'),
+      strip.background=element_blank(),
+      strip.text=element_text(size=rel(.8),colour="slategray",margin=margin(.1,0,.1,0,"cm"))
+    )
 }
 
+# load the logo (for branding)
+logo <- image_read("../logo.png")
+
 # load data
-load("data/ukraine.RData")
+load("ukraine.RData")
 
 # wheat futures ----
 
@@ -40,13 +60,15 @@ gg_wheat <- ggplot(wheat_sub,aes(x=Date,y=Close))+
   geom_text(aes(x=Event_Date,y=Timeline,label=Event),nudge_y=35,na.rm=T)+
   geom_text(aes(x=Event_Date,y=Timeline,label=Date),size=3,nudge_x=30,na.rm=T)+
   coord_cartesian(ylim=c(500,1300),xlim=c(as.Date("2022-01-01"),as.Date("2023-01-15")))+
-  labs(y="Wheat Futures Price (cents/bu)",caption="Created by @DavidUbilava using data from https://data.nasdaq.com/")+
-  theme_classic()+
-  theme_guess()+
-  theme(axis.title = element_text(size=16),axis.text = element_text(size=14))
+  labs(title="Wheat Futures and Geopolitical Events in the Black Sea Region",x="",y="Price (c/bu)",caption="Created by @DavidUbilava | Data: Nasdaq Data Link (https://data.nasdaq.com/)")+
+  theme_guess()
 
-ggsave("figures/wheat.png",gg_wheat,width=6.5,height=4.5,dpi="retina",device="png")
-ggsave("figures/wheat.eps",gg_wheat,width=6.5,height=4.5,dpi="retina",device="eps")
+# add logo
+gg_wheat <- ggdraw(gg_wheat) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
+
+ggsave("wheat.png",gg_wheat,width=6.5,height=4.5,dpi="retina",device="png")
+ggsave("wheat.eps",gg_wheat,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
 
 
 # wheat production & export ----
@@ -55,36 +77,42 @@ max_val <- sum(prodexp_sub[Year==2021]$Production)
 min_inc <- pretty(0:max_val,n=10)[2]
 
 gg_prod <- ggplot(prodexp_sub,aes(x=Year,y=Production,fill=Country,group=Country)) + 
-  geom_area(color="white",size=.4)+
+  geom_area(color="white",linewidth=.4)+
   geom_hline(yintercept = seq(min_inc,max_val,min_inc),color="white",linewidth=.3,linetype=3)+
   scale_x_discrete(breaks=seq(2000,2020,5))+
   scale_fill_manual(values=c("darkgray",rep("dimgray",2),rep("darkgray",5),"coral","indianred"))+
-  labs(x="Year",y="Production (million mt)",caption="Created by @DavidUbilava using data from USDA/FAS PSD Online\nhttps://apps.fas.usda.gov/psdonline/app/index.html")+
+  labs(x="Year",y="Production (million mt)",caption="Created by @DavidUbilava | Data: USDA/FAS PSD Online (https://apps.fas.usda.gov/psdonline/app/index.html)")+
   coord_cartesian(ylim=c(0,840))+
-  theme_classic()+
   theme_guess()+
-  theme(legend.position = "right",legend.title=element_blank(),plot.caption = element_text(color="darkgray"),axis.title = element_text(size=16),axis.text = element_text(size=14),legend.text = element_text(size=14),legend.key.size = unit(0.8,"cm"))
+  theme(legend.position = "right")
 
-ggsave("figures/production.png",gg_prod,width=6.5,height=4.5,dpi="retina",device="png")
-ggsave("figures/production.eps",gg_prod,width=6.5,height=4.5,dpi="retina",device="eps")
+# add logo
+gg_prod <- ggdraw(gg_prod) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
+
+ggsave("production.png",gg_prod,width=6.5,height=4.5,dpi="retina",device="png")
+ggsave("production.eps",gg_prod,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
 
 
 max_val <- sum(prodexp_sub[Year==2021]$Exports)
 min_inc <- pretty(0:max_val,n=10)[2]
 
 gg_expr <- ggplot(prodexp_sub,aes(x=Year,y=Exports,fill=Country,group=Country)) + 
-  geom_area(color="white",size=.4)+
+  geom_area(color="white",linewidth=.4)+
   geom_hline(yintercept = seq(min_inc,max_val,min_inc),color="white",linewidth=.3,linetype=3)+
   scale_x_discrete(breaks=seq(2000,2020,5))+
   scale_fill_manual(values=c("darkgray",rep("dimgray",2),rep("darkgray",5),"coral","indianred"))+
   labs(x="Year",y="Exports (million mt)",caption="Created by @DavidUbilava using data from USDA/FAS PSD Online\nhttps://apps.fas.usda.gov/psdonline/app/index.html")+
   coord_cartesian(ylim=c(0,210))+
-  theme_classic()+
   theme_guess()+
-  theme(legend.position = "right",legend.title=element_blank(),plot.caption = element_text(color="darkgray"),axis.title = element_text(size=16),axis.text = element_text(size=14),legend.text = element_text(size=14),legend.key.size = unit(0.8,"cm"))
+  theme(legend.position = "right")
 
-ggsave("figures/exports.png",gg_expr,width=6.5,height=4.5,dpi="retina",device="png")
-ggsave("figures/exports.eps",gg_expr,width=6.5,height=4.5,dpi="retina",device="eps")
+# add logo
+gg_expr <- ggdraw(gg_expr) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
+
+ggsave("exports.png",gg_expr,width=6.5,height=4.5,dpi="retina",device="png")
+ggsave("exports.eps",gg_expr,width=6.5,height=4.5,dpi="retina",device=cairo_ps)
 
 
 # Conflict ----
@@ -142,10 +170,13 @@ gg_ch <- ggplot(data = africaplus) +
   scale_fill_gradient2(low="powderblue",high="coral",midpoint=0,name="Change from\n2020-21 Avg")+
   scale_size_continuous(name="Incidents\nin 2022")+
   scale_alpha_continuous(name="Incidents\nin 2022")+
-  labs(caption="Created by @DavidUbilava using data from https://acleddata.com/")+
-  theme_void()+
+  labs(title="2022 Conflict and Change from 2020-2021 Average",x="",y="",caption="Created by @DavidUbilava | Data: ACLED (https://acleddata.com/)")+
   theme_guess()+
-  theme(axis.line.x=element_blank(),axis.line.y=element_blank(),axis.title = element_blank(),axis.text = element_blank(),plot.title = element_text(hjust=.5,size=16,colour="gray35",face="bold"),legend.title=element_text(hjust=.5,size=14),legend.text = element_text(hjust=1,size=14),legend.position = c(.17,.27),legend.key.height=unit(.75,'cm'),legend.key.width=unit(.5,'cm'),legend.direction = "vertical", legend.box = "horizontal")
+  theme(axis.line.x=element_blank(),legend.title=element_text(hjust=0,size=rel(1.1)),legend.text = element_text(hjust=1,size=rel(1)),legend.position = c(.22,.23),legend.key.height=unit(.75,'cm'),legend.key.width=unit(.5,'cm'),legend.direction = "vertical", legend.box = "horizontal")
 
-ggsave("figures/conflict2022.png",gg_ch,width=6.5,height=6.5,dpi="retina",device="png")
-ggsave("figures/conflict2022.eps",gg_ch,width=6.5,height=6.5,dpi="retina",device=cairo_ps)
+# add logo
+gg_ch <- ggdraw(gg_ch) +
+  draw_image(logo,scale=.12,x=1,hjust=1,halign=0,valign=0,clip="off")
+
+ggsave("conflict2022.png",gg_ch,width=6.5,height=6.65,dpi="retina",device="png")
+ggsave("conflict2022.eps",gg_ch,width=6.5,height=6.65,dpi="retina",device=cairo_ps)
