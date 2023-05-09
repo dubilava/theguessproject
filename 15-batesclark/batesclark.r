@@ -14,7 +14,7 @@ library(ggsankey)
 library(tidyverse)
 
 # install.packages("ggalluvial")
-library(ggalluvial)
+# library(ggalluvial)
 
 # plot aesthetics
 theme_guess <- function(base_size=10,base_family="sans",title_family="sans",border=F){
@@ -71,20 +71,26 @@ gg_batesclark <- ggplot(dt,aes(x=x,next_x=next_x,node=node,next_node=next_node,f
 ggsave("batesclark_sankey.png",gg_batesclark,width=6.5,height=3.75,dpi="retina",device="png")
 ggsave("batesclark_sankey.eps",gg_batesclark,width=6.5,height=3.75,dpi="retina",device=cairo_ps)
 
+
+
 batesclark_dt[,`:=`(Years_to_Nobel=Nobel-Year,Years_to_Death=ifelse(!is.na(Died),Died,2023)-Year)]
+
+# batesclark_dt[order(Years_to_Death)]
 
 # batesclark_dt[is.na(Years_to_Death)]$Years_to_Death <- 99
 
-ggplot(batesclark_dt)+
+gg_batestonobel <- ggplot(batesclark_dt)+
   geom_rect(aes(xmin=14.5,xmax=26.5,ymin=-Inf,ymax=Inf),fill="lightgray",alpha=.5)+
-  annotate("text",family="mono",fontface="bold",label="Nobel\nTerritory",x=20.5,y=2021,size=5,colour="coral")+
+  annotate("text",family="mono",fontface="bold",label="Nobel\nTerritory",x=20.5,y=2021,size=4,colour="coral")+
   geom_segment(aes(x=0,xend=Years_to_Death,y=Year,yend=Year),color=ifelse(is.na(batesclark_dt$Died),"coral","darkgray"),linewidth=.5)+
-  geom_point(aes(x=Years_to_Nobel,y=Year),color="coral",size=2,na.rm=T)+
-  labs(title="Bates Clark Medalists",x="Years from the Award",y="",caption = "Created by @DavidUbilava | Data: Wikipedia")+
+  geom_point(aes(x=Years_to_Nobel,y=Year),color="coral",size=1,na.rm=T)+
+  labs(title="Bates Clark Medalists",x="Years from the Award",y="Year of the Award",caption = "Created by @DavidUbilava | Data: Wikipedia")+
+  coord_cartesian(xlim=c(2,62))+
   theme_guess()+
   theme(axis.line=element_blank(),panel.grid.major = element_blank(),axis.ticks=element_blank(),plot.margin=margin(.25,.25,.25,1.75,"lines"))
 
-
+ggsave("batestonobel.png",gg_batestonobel,width=6.5,height=3.75,dpi="retina",device="png")
+ggsave("batestonobel.eps",gg_batestonobel,width=6.5,height=3.75,dpi="retina",device=cairo_ps)
 
 
 
