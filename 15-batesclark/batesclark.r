@@ -17,12 +17,7 @@ library(tidyverse)
 library(ggalluvial)
 
 # plot aesthetics
-theme_guess <- function(
-    base_size=10,
-    base_family = "sans",
-    title_family = "sans",
-    border=FALSE
-){
+theme_guess <- function(base_size=10,base_family="sans",title_family="sans",border=F){
   theme_foundation(base_size=base_size,base_family=base_family) +
     theme(
       line = element_line(linetype=1,colour="black"),
@@ -63,12 +58,9 @@ logo <- image_read("../logo.png")
 # load data
 batesclark_dt <- fread("batesclark.csv")
 
+dt <- make_long(batesclark_dt,PhD,Institution)
 
-df <- batesclark_dt %>%
-  make_long(PhD,Institution)
-df
-
-gg_batesclark <- ggplot(df,aes(x=x,next_x=next_x,node=node,next_node=next_node,fill=factor(node),label=node))+
+gg_batesclark <- ggplot(dt,aes(x=x,next_x=next_x,node=node,next_node=next_node,fill=factor(node),label=node))+
   geom_sankey(flow.alpha=0.5,node.color=NA,show.legend=F,width=.05)+
   geom_sankey_text(size=2,color="black",hjust=c(rep(1,13),rep(0,11)))+  
   labs(title="Bates Clark Medalists' Whereabouts",caption="Created by @DavidUbilava | Data: Wikipedia")+
@@ -79,31 +71,19 @@ gg_batesclark <- ggplot(df,aes(x=x,next_x=next_x,node=node,next_node=next_node,f
 ggsave("batesclark_sankey.png",gg_batesclark,width=6.5,height=3.75,dpi="retina",device="png")
 ggsave("batesclark_sankey.eps",gg_batesclark,width=6.5,height=3.75,dpi="retina",device=cairo_ps)
 
+batesclark_dt[,`:=`(Years_to_Nobel=Nobel-Year,Years_to_Death=ifelse(!is.na(Died),Died,2023)-Year)]
 
-ggplot(data = batesclark_dt,
-       aes(axis1 = PhD, axis2 = Institution)) +
-  geom_alluvium(aes(fill = PhD)) +
-  geom_stratum() +
-  geom_text(stat = "stratum",
-            aes(label = after_stat(stratum))) +
-  scale_x_discrete(limits = c("Survey", "Response"),
-                   expand = c(0.15, 0.05)) +
-  theme_void()
+# batesclark_dt[is.na(Years_to_Death)]$Years_to_Death <- 99
 
+ggplot(batesclark_dt)+
+  geom_rect(aes(xmin=14.5,xmax=26.5,ymin=-Inf,ymax=Inf),fill="lightgray",alpha=.5)+
+  annotate("text",family="mono",fontface="bold",label="Nobel\nTerritory",x=20.5,y=2021,size=5,colour="coral")+
+  geom_segment(aes(x=0,xend=Years_to_Death,y=Year,yend=Year),color=ifelse(is.na(batesclark_dt$Died),"coral","darkgray"),linewidth=.5)+
+  geom_point(aes(x=Years_to_Nobel,y=Year),color="coral",size=2,na.rm=T)+
+  labs(title="Bates Clark Medalists",x="Years from the Award",y="",caption = "Created by @DavidUbilava | Data: Wikipedia")+
+  theme_guess()+
+  theme(axis.line=element_blank(),panel.grid.major = element_blank(),axis.ticks=element_blank(),plot.margin=margin(.25,.25,.25,1.75,"lines"))
 
-
-
-pl <- pl + theme(legend.position = "none")
-pl <- pl +  theme(axis.title = element_blank()
-                  , axis.text.y = element_blank()
-                  , axis.ticks = element_blank()  
-                  , panel.grid = element_blank())
-pl <- pl + scale_fill_viridis_d(option = "inferno")
-pl <- pl + labs(title = "Sankey diagram using ggplot")
-pl <- pl + labs(subtitle = "using  David Sjoberg's ggsankey package")
-pl <- pl + labs(caption = "@techanswers88")
-pl <- pl + labs(fill = 'Nodes')
-pl
 
 
 
