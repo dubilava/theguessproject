@@ -1,5 +1,7 @@
 library(ggplot2)
 library(data.table)
+library(magick)
+library(cowplot)
 library(showtext)
 font_add_google(name="Syne Mono")
 showtext_auto()
@@ -49,5 +51,16 @@ gg <- ggplot()+
 
 ggsave("logo.png",gg,width=2^10,height=2^10,units="px")
 
+logo <- image_read("logo.png")
 
+gg_blank <- ggplot(data=data.table(x=c(0,1),y=c(0,1))) +
+  geom_blank()+
+  theme_void()+
+  theme(panel.background=element_rect(fill="white",color=NA))
+
+# add logo
+gg_blank <- ggdraw(gg_blank) +
+  draw_image(logo,scale=1,x=0,y=0,clip="off")
+
+ggsave("logo_wide.png",gg_blank,width=1280,height=640,units="px")
 
